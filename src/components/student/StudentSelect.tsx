@@ -41,9 +41,10 @@ const CATEGORIES: Category[] = [
     ringColor: 'ring-blue-400',
     match: (m) =>
       (m.tags ?? []).some((t) => t.toLowerCase().includes('latin')) ||
-      ['mat-004','mat-007','mat-008','mat-009','mat-010',
+      ['mat-007','mat-008','mat-009','mat-010',
        'mat-011','mat-012','mat-013','mat-014','mat-015',
-       'mat-016','mat-017','mat-018','mat-019','mat-020'].includes(m.id),
+       'mat-016','mat-017','mat-018','mat-019','mat-020',
+       'mat-031','mat-032','mat-033','mat-034'].includes(m.id),
   },
   {
     id: 'greek',
