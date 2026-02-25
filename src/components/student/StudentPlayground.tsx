@@ -341,6 +341,10 @@ const SPELLING_TIPS: Record<NonNullable<SpellingRule>, { headline: string; expla
     headline: 'Change y to i before -es!',
     explanation: 'When a word ends in y after a consonant (like story or baby), we change the y to i before adding -es. So story + es = stories, not storyes!',
   },
+  'merge-t-tion': {
+    headline: 'The t blends into -tion!',
+    explanation: 'When a root ends in t (like rupt or struct) and we add -tion, the t at the end of the root merges into the suffix. So rupt + tion = ruption, not rupttion!',
+  },
 };
 
 const SpellingTip: React.FC<{ rule: SpellingRule; base: string; suffix: string; surface: string }> = ({

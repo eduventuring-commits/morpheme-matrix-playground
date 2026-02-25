@@ -299,6 +299,7 @@ export const SYSTEM_MATRICES: MorphemeMatrix[] = [
       { word: 'deforming',  definition: 'ruining the shape of', partOfSpeech: 'verb', example: 'The heat is deforming the frame.' },
       { word: 'deformation',definition: 'the act of ruining or changing shape', partOfSpeech: 'noun', example: 'Deformation of the bridge was dangerous.' },
     ],
+  },
 
   // ── MATRIX 8: Latin port — carry ──────────────────────────────────────────
   {
@@ -358,6 +359,7 @@ export const SYSTEM_MATRICES: MorphemeMatrix[] = [
       { word: 'deportation',definition: 'the act of carrying someone out of a country', partOfSpeech: 'noun', example: 'Deportation orders were issued.' },
       { word: 'deportable', definition: 'subject to being sent out of a country', partOfSpeech: 'adj', example: 'The offense was deportable.' },
     ],
+  },
 
   // ── MATRIX 9: Latin rupt — break/burst ────────────────────────────────────
   {
@@ -415,6 +417,7 @@ export const SYSTEM_MATRICES: MorphemeMatrix[] = [
       { word: 'interruptible', definition: 'able to be interrupted', partOfSpeech: 'adj', example: 'The task is interruptible at any point.' },
       { word: 'interruptive', definition: 'tending to interrupt', partOfSpeech: 'adj', example: 'His interruptive style annoyed the group.' },
     ],
+  },
 
   // ── MATRIX 10: Latin tract — draw/pull ────────────────────────────────────
   {
@@ -478,6 +481,7 @@ export const SYSTEM_MATRICES: MorphemeMatrix[] = [
       { word: 'subtracted', definition: 'taken away; deducted', partOfSpeech: 'verb', example: 'The subtracted amount was small.' },
       { word: 'subtraction',definition: 'the act of taking away; a math operation', partOfSpeech: 'noun', example: 'Subtraction is the opposite of addition.' },
     ],
+  },
 
   // ── MATRIX 11: Latin scrib/script — write ─────────────────────────────────
   {
@@ -552,6 +556,7 @@ export const SYSTEM_MATRICES: MorphemeMatrix[] = [
       { word: 'prescript',  definition: 'a written rule set in advance', partOfSpeech: 'noun', example: 'The prescript guided all decisions.' },
       { word: 'descript',   definition: 'describable; having describable qualities', partOfSpeech: 'adj', example: 'The scene was barely descript.' },
     ],
+  },
 
   // ── MATRIX 12: Latin spect — see/watch ────────────────────────────────────
   {
