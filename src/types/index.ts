@@ -73,6 +73,7 @@ export type SpellingRule =
   | 'double-consonant'// Rule 2: double final consonant (run+ing → running)
   | 'y-to-i-cons'     // Rule 3: y→i before consonant suffix (happy+ness → happiness)
   | 'y-to-i-es'       // Rule 4: y→i before -es (story+es → stories)
+  | 'merge-t-tion'    // Rule 6: base ends in t + suffix tion → drop junction t (rupt+tion → ruption)
   | null;             // No rule applied
 
 export interface NormalizedResult {
@@ -138,6 +139,16 @@ export function normalizedResult(w: BuiltWord): NormalizedResult {
   ) {
     stem = base.slice(0, -1) + 'i';
     rule = 'y-to-i-cons';
+  }
+  // Rule 6: base ending in 't' + suffix 'tion' → drop junction 't' to avoid *rupttion
+  //         (rupt+tion → rup·tion = ruption, struct+tion → struction, dict+tion → diction)
+  else if (
+    suf === 'tion' &&
+    base.length > 2 &&
+    base.slice(-1).toLowerCase() === 't'
+  ) {
+    stem = base.slice(0, -1);
+    rule = 'merge-t-tion';
   }
 
   // Rule 5: collapse triple+ identical consonant runs to two
