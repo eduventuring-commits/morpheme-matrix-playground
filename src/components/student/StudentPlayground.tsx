@@ -535,11 +535,13 @@ const MeaningChecker: React.FC<{
 const SentenceWriter: React.FC<{
   word: string;
   definition?: string;
+  example?: string;
   onDone: (sentence: string, passed: boolean) => void;
-}> = ({ word, definition, onDone }) => {
+}> = ({ word, definition, example, onDone }) => {
   const [sentence, setSentence]   = useState('');
   const [result, setResult]       = useState<SentenceCheck | null>(null);
   const [attempts, setAttempts]   = useState(0);
+  const [showExample, setShowExample] = useState(false);
   const textareaRef               = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => { textareaRef.current?.focus(); }, []);
@@ -570,6 +572,26 @@ const SentenceWriter: React.FC<{
 
       {definition && (
         <p className="text-xs text-gray-400 italic leading-snug">{definition}</p>
+      )}
+
+      {example && (
+        <div>
+          {showExample ? (
+            <div className="flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-xl px-3 py-2">
+              <BookOpen className="w-3.5 h-3.5 text-blue-400 shrink-0 mt-0.5" />
+              <p className="text-xs text-blue-700 italic leading-snug">
+                <span className="font-semibold not-italic">Example: </span>{example}
+              </p>
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowExample(true)}
+              className="text-xs text-blue-400 hover:text-blue-600 underline transition-colors"
+            >
+              💡 Give me an example
+            </button>
+          )}
+        </div>
       )}
 
       <textarea
@@ -1107,6 +1129,7 @@ export const StudentPlayground: React.FC<{
                   <SentenceWriter
                     word={lastResult.word}
                     definition={lastResult.definition}
+                    example={lastResult.example}
                     onDone={handleSentenceDone}
                   />
                 </div>
