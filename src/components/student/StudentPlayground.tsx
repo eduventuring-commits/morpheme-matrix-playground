@@ -55,6 +55,14 @@ function relevantMorphemes(
 const chipId = (m: Morpheme) => `chip::${m.id}`;
 const slotId = (t: 'prefix' | 'suffix') => `slot::${t}`;
 
+function pickDistractor(correctDef: string, allMatrices: MorphemeMatrix[]): string {
+  const pool = allMatrices
+    .flatMap((m) => m.wordKey.map((w) => w.definition))
+    .filter((def) => def !== correctDef && def.length > 0);
+  if (pool.length === 0) return 'to change something into a different form';
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
 // ─── Sentence quality check ───────────────────────────────────────────────────
 // Returns { ok, feedback } — no network calls, just local heuristics.
 
@@ -450,6 +458,78 @@ const WordDisplay: React.FC<{
   );
 };
 
+// ─── Meaning Checker ──────────────────────────────────────────────────────────
+
+const MeaningChecker: React.FC<{
+  word: string;
+  correct: string;
+  distractor: string;
+  onCorrect: () => void;
+}> = ({ word, correct, distractor, onCorrect }) => {
+  const [selected, setSelected] = useState<string | null>(null);
+  const [options] = useState(() =>
+    [{ text: correct, isCorrect: true }, { text: distractor, isCorrect: false }]
+      .sort(() => Math.random() - 0.5)
+  );
+
+  const isRight = selected === correct;
+  const isWrong = selected !== null && !isRight;
+
+  useEffect(() => {
+    if (!isRight) return;
+    const t = setTimeout(onCorrect, 800);
+    return () => clearTimeout(t);
+  }, [isRight, onCorrect]);
+
+  return (
+    <div className="bg-violet-50 border-2 border-violet-200 rounded-3xl p-5 space-y-4">
+      <p className="text-center text-lg font-extrabold text-gray-700">
+        Based on the word parts, what does{' '}
+        <span className="italic text-violet-700">{word}</span> mean?
+      </p>
+      <div className="space-y-2">
+        {options.map((opt) => {
+          const isSelected = selected === opt.text;
+          const btnColor = !isSelected
+            ? 'bg-white border-gray-200 hover:border-violet-300 text-gray-700'
+            : opt.isCorrect
+            ? 'bg-emerald-100 border-emerald-400 text-emerald-800'
+            : 'bg-red-100 border-red-400 text-red-800';
+          return (
+            <button
+              key={opt.text}
+              disabled={isRight}
+              onClick={() => setSelected(opt.text)}
+              className={`w-full text-left px-4 py-3 rounded-2xl border-2 font-medium
+                transition-colors leading-snug ${btnColor}`}
+            >
+              {opt.text}
+            </button>
+          );
+        })}
+      </div>
+      {isWrong && (
+        <div className="text-center space-y-2">
+          <p className="text-orange-600 font-semibold text-sm">
+            Look again at the word parts and try again.
+          </p>
+          <button
+            onClick={() => setSelected(null)}
+            className="text-sm text-violet-600 underline hover:text-violet-800 transition-colors"
+          >
+            Try again
+          </button>
+        </div>
+      )}
+      {isRight && (
+        <p className="text-center text-emerald-600 font-bold text-sm">
+          That's right! ✅
+        </p>
+      )}
+    </div>
+  );
+};
+
 // ─── Sentence Writer ──────────────────────────────────────────────────────────
 
 const SentenceWriter: React.FC<{
@@ -552,10 +632,11 @@ const SentenceWriter: React.FC<{
 // ─── Main Playground ──────────────────────────────────────────────────────────
 
 type RightPanelMode =
-  | 'idle'          // just the base — no prefix/suffix chosen yet
-  | 'judge'         // word built, awaiting Real/Made-Up
-  | 'sentence'      // judged as real — write a sentence
-  | 'result';       // feedback shown, ready to continue
+  | 'idle'           // just the base — no prefix/suffix chosen yet
+  | 'judge'          // word built, awaiting Real/Made-Up
+  | 'meaning-check'  // word judged real — pick the correct definition
+  | 'sentence'       // meaning confirmed — write a sentence
+  | 'result';        // feedback shown, ready to continue
 
 export const StudentPlayground: React.FC<{
   matrixId: string;
@@ -563,7 +644,7 @@ export const StudentPlayground: React.FC<{
   startBaseIndex?: number;
   onBack: () => void;
 }> = ({ matrixId, studentId, startBaseIndex = 0, onBack }) => {
-  const { getMatrixById, addProgressEntry, getStudentProgress } = useStore();
+  const { getMatrixById, getAllMatrices, addProgressEntry, getStudentProgress } = useStore();
   const { speak, isSupported } = useSpeech();
   const dict = useDictionary();
 
@@ -578,6 +659,7 @@ export const StudentPlayground: React.FC<{
     word: string; correct: boolean; isReal: boolean;
     definition?: string; example?: string; sentence?: string;
   } | null>(null);
+  const [meaningOptions, setMeaningOptions] = useState<{ correct: string; distractor: string } | null>(null);
   const [activeDrag, setActiveDrag] = useState<Morpheme | null>(null);
   const [wordsMade, setWordsMade]   = useState<{ word: string; sentence?: string }[]>([]);
 
@@ -597,6 +679,7 @@ export const StudentPlayground: React.FC<{
     setBaseIndex(i);
     setBuilt({ base: matrix.bases[i] });
     setLastResult(null);
+    setMeaningOptions(null);
     setRevealed(false);
     setMode('idle');
   };
@@ -670,6 +753,7 @@ export const StudentPlayground: React.FC<{
   const clearBuilt = () => {
     setBuilt({ base: currentBase });
     setLastResult(null);
+    setMeaningOptions(null);
     setRevealed(false);
     setMode('idle');
   };
@@ -689,12 +773,23 @@ export const StudentPlayground: React.FC<{
       example:    wordKeyEntry?.example    ?? dict.definition?.example,
     });
 
-    // If it's a real word (actually real), ask for a sentence
+    // If it's a real word, go to meaning-check (if definition available) then sentence
     if (actuallyReal) {
-      setMode('sentence');
+      const correctDef = wordKeyEntry?.definition ?? dict.definition?.definition ?? '';
+      if (correctDef) {
+        const distractor = pickDistractor(correctDef, getAllMatrices());
+        setMeaningOptions({ correct: correctDef, distractor });
+        setMode('meaning-check');
+      } else {
+        setMode('sentence');
+      }
     } else {
       setMode('result');
     }
+  };
+
+  const handleMeaningDone = () => {
+    setMode('sentence');
   };
 
   const handleSentenceDone = (sentence: string, _passed: boolean) => {
@@ -952,6 +1047,16 @@ export const StudentPlayground: React.FC<{
                     </div>
                   )}
                 </div>
+              )}
+
+              {/* ── Meaning check step ── */}
+              {mode === 'meaning-check' && meaningOptions && (
+                <MeaningChecker
+                  word={surface}
+                  correct={meaningOptions.correct}
+                  distractor={meaningOptions.distractor}
+                  onCorrect={handleMeaningDone}
+                />
               )}
 
               {/* ── Sentence writing step (only for real words) ── */}
