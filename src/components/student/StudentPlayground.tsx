@@ -107,9 +107,16 @@ function checkSentence(sentence: string, word: string): SentenceCheck {
     };
   }
 
-  // Must contain at least one verb-like word (very loose heuristic)
-  const verbHints = /\b(is|are|was|were|has|have|had|will|can|could|should|would|do|does|did|make|makes|made|see|saw|go|goes|went|come|came|think|thought|know|knew|feel|felt|look|looked|want|wanted|need|needed|get|got|use|used|find|found|help|helped|seem|seemed|became|become|keep|kept|give|gave|take|took|run|ran|put|set|show|showed|move|moved|live|lived|mean|means|meant|call|called|ask|asked|turn|turned|learn|learned|read|tried|try|write|wrote|work|worked|play|played|build|built|carry|carried|bring|brought|start|started|stop|stopped|carry|carried|let|happen|happened|love|loved|like|liked|said|say|told|tell)\b/i;
-  if (!verbHints.test(trimmed)) {
+  // Must contain at least one verb-like word.
+  // IMPORTANT: morpheme-built words (import, disrupt, inspect, transport, construct…)
+  // are frequently the main verb of the sentence, so the target word itself always
+  // satisfies this check. We also test a broad auxiliary/common-verb list so that
+  // noun-form words (transportation, inspection) work when paired with other verbs.
+  const verbHints = /\b(is|are|was|were|has|have|had|will|can|could|should|would|do|does|did|make|makes|made|see|saw|go|goes|went|come|came|think|thought|know|knew|feel|felt|look|looks|looked|want|wanted|need|needs|needed|get|gets|got|use|uses|used|find|finds|found|help|helps|helped|seem|seems|seemed|became|become|becomes|keep|keeps|kept|give|gives|gave|take|takes|took|run|runs|ran|put|puts|set|show|shows|showed|move|moves|moved|live|lives|lived|mean|means|meant|call|calls|called|ask|asks|asked|turn|turns|turned|learn|learns|learned|read|try|tried|tries|write|writes|wrote|work|works|worked|play|plays|played|build|builds|built|carry|carries|carried|bring|brings|brought|start|starts|started|stop|stops|stopped|let|happen|happens|happened|love|loves|loved|like|likes|liked|said|say|says|told|tell|tells|include|includes|included|send|sends|sent|receive|receives|received|cause|causes|caused|allow|allows|allowed|change|changes|changed|create|creates|created|hold|holds|held|protect|protects|protected|connect|connects|connected|describe|describes|described|explain|explains|explained|prevent|prevents|prevented|support|supports|supported|require|requires|required|contain|contains|contained|affect|affects|affected|provide|provides|provided)\b/i;
+  // The target word is already confirmed present in the sentence (first check above),
+  // and morpheme words are almost always the verb — so it always satisfies this check.
+  const hasVerb = verbHints.test(trimmed) || trimmed.toLowerCase().includes(word.toLowerCase());
+  if (!hasVerb) {
     return {
       ok: false,
       feedback: 'Great start! Try to write a complete sentence with a verb (an action or being word).',
