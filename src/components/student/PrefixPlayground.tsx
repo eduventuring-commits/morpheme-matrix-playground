@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Volume2, CheckCircle2, AlertCircle, PenLine, BookOpen, XCircle,
+  Volume2, CheckCircle2, AlertCircle, PenLine, BookOpen, XCircle, RefreshCw,
 } from 'lucide-react';
 import { useSpeech } from '../../hooks/useSpeech';
 import { useDictionary } from '../../hooks/useDictionary';
@@ -12,12 +12,12 @@ import { PREFIX_MATRICES } from '../../data/prefixMatrices';
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type PanelMode =
-  | 'idle'          // no base selected yet
-  | 'judge'         // base chosen, awaiting Real / Made-Up
-  | 'judge-retry'   // said Made-Up but it's real — show correction
-  | 'meaning-check' // judged real — pick the right definition
-  | 'sentence'      // write a sentence
-  | 'result';       // finished — ready to try another
+  | 'idle'
+  | 'judge'
+  | 'judge-retry'
+  | 'meaning-check'
+  | 'sentence'
+  | 'result';
 
 interface ResultData {
   word: string;
@@ -44,28 +44,23 @@ function checkSentence(sentence: string, word: string): SentenceCheck {
   const trimmed = sentence.trim();
   if (!trimmed.toLowerCase().includes(word.toLowerCase()))
     return { ok: false, feedback: `Make sure to use the word "${word}" in your sentence!` };
-
   const wordCount = trimmed.split(/\s+/).filter(Boolean).length;
   if (wordCount < 4)
     return { ok: false, feedback: 'Your sentence is too short. Try writing a longer, complete sentence!' };
-
   if (trimmed[0] !== trimmed[0].toUpperCase() || trimmed[0] === trimmed[0].toLowerCase())
     return { ok: false, feedback: 'Start your sentence with a capital letter!' };
-
   if (!/[.!?]$/.test(trimmed))
     return { ok: false, feedback: 'End your sentence with a period, exclamation mark, or question mark!' };
-
-  const verbHints = /\b(is|are|was|were|has|have|had|will|can|could|should|would|do|does|did|make|makes|made|see|saw|go|goes|went|come|came|think|thought|know|knew|feel|felt|look|looks|looked|want|wanted|need|needs|needed|get|gets|got|use|uses|used|find|finds|found|help|helps|helped|seem|seems|seemed|become|becomes|became|keep|keeps|kept|give|gives|gave|take|takes|took|run|runs|ran|put|puts|set|show|shows|showed|move|moves|moved|live|lives|lived|mean|means|meant|call|calls|called|ask|asks|asked|turn|turns|turned|learn|learns|learned|read|try|tried|tries|write|writes|wrote|work|works|worked|play|plays|played|build|builds|built|carry|carries|carried|bring|brings|brought|start|starts|started|stop|stops|stopped|let|happen|happens|happened|love|loves|loved|like|likes|liked|say|says|said|tell|tells|told|include|includes|included|send|sends|sent|receive|receives|received|cause|causes|caused|allow|allows|allowed|change|changes|changed|create|creates|created|protect|protects|protected|connect|connects|connected|describe|describes|described|explain|explains|explained|prevent|prevents|prevented|support|supports|supported|require|requires|required|contain|contains|contained|affect|affects|affected|provide|provides|provided)\b/i;
+  const verbHints = /\b(is|are|was|were|has|have|had|will|can|could|should|would|do|does|did|make|makes|made|see|saw|go|goes|went|come|came|think|thought|know|knew|feel|felt|look|looks|looked|want|wanted|need|needs|get|gets|got|use|uses|used|find|finds|found|help|helps|helped|seem|seems|became|become|becomes|keep|keeps|kept|give|gives|gave|take|takes|took|run|runs|ran|put|puts|set|show|shows|showed|move|moves|moved|live|lives|lived|mean|means|meant|call|calls|asked|turn|turns|turned|learn|learns|learned|try|tried|tries|write|writes|wrote|work|works|worked|play|plays|played|build|builds|built|carry|carries|carried|bring|brings|brought|start|starts|started|stop|stops|stopped|let|happen|happens|happened|love|loves|loved|like|likes|liked|say|says|said|tell|tells|told|include|includes|included|send|sends|sent|change|changes|changed|create|creates|created|protect|protects|protected|connect|connects|connected|describe|describes|described|prevent|prevents|prevented|support|supports|supported|contain|contains|contained|affect|affects|affected|provide|provides|provided)\b/i;
   const hasVerb = verbHints.test(trimmed) || trimmed.toLowerCase().includes(word.toLowerCase());
   if (!hasVerb)
     return { ok: false, feedback: 'Great start! Try to include a verb (an action or being word).' };
-
   return { ok: true, feedback: 'Great sentence! 🌟' };
 }
 
 // ─── SpellingTip ──────────────────────────────────────────────────────────────
 
-const SPELLING_TIPS: Record<SpellingRule & string, string> = {
+const SPELLING_TIPS: Partial<Record<string, string>> = {
   'drop-e':           '✏️ Drop the silent e before a vowel suffix',
   'double-consonant': '✏️ Double the last consonant before a vowel suffix',
   'y-to-i-cons':      '✏️ Change y to i before a consonant suffix',
@@ -80,9 +75,7 @@ const SpellingTip: React.FC<{ rule: SpellingRule; base: string; suffix: string; 
   return (
     <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-xs text-amber-700 font-medium">
       <span className="shrink-0">{SPELLING_TIPS[rule] ?? '✏️ Spelling rule applied'}</span>
-      <span className="text-amber-500 font-normal">
-        ({base} + {suffix} → {surface})
-      </span>
+      <span className="text-amber-500 font-normal">({base} + {suffix} → {surface})</span>
     </div>
   );
 };
@@ -205,7 +198,9 @@ const SentenceWriter: React.FC<{
             ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
             : 'bg-orange-50 text-orange-700 border border-orange-200'
         }`}>
-          {result.ok ? <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" /> : <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />}
+          {result.ok
+            ? <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
+            : <AlertCircle  className="w-4 h-4 shrink-0 mt-0.5" />}
           <span>{result.feedback}</span>
         </div>
       )}
@@ -238,7 +233,7 @@ export const PrefixPlayground: React.FC<{
   const { speak, isSupported } = useSpeech();
   const dict = useDictionary();
 
-  const matrix     = PREFIX_MATRICES.find((m) => m.id === matrixId);
+  const matrix      = PREFIX_MATRICES.find((m) => m.id === matrixId);
   const fixedPrefix = matrix?.prefixes[0];
 
   const [selectedBase,   setSelectedBase]   = useState<Morpheme | null>(null);
@@ -250,7 +245,6 @@ export const PrefixPlayground: React.FC<{
   const [wordsMade,      setWordsMade]      = useState<{ word: string; sentence?: string }[]>([]);
   const startTimeRef = useRef<number>(Date.now());
 
-  // Rebuild the BuiltWord whenever selection changes
   const built: BuiltWord = {
     prefix: fixedPrefix,
     base:   selectedBase  ?? undefined,
@@ -261,11 +255,11 @@ export const PrefixPlayground: React.FC<{
   const normResult   = normalizedResult(built);
   const surface      = normResult.surface || raw;
   const spellingRule = normResult.rule;
+  const parts        = [built.prefix, built.base, built.suffix].filter(Boolean) as Morpheme[];
 
   const wordKeyEntry = matrix?.wordKey.find((w) => matchesWordKey(built, w.word));
   const isInWordKey  = !!wordKeyEntry;
 
-  // Dict lookup whenever surface changes
   useEffect(() => {
     if (surface && surface.length >= 2 && mode !== 'result') dict.lookup(surface);
   }, [surface, mode]); // eslint-disable-line
@@ -274,7 +268,7 @@ export const PrefixPlayground: React.FC<{
     return <div className="p-8 text-red-500">Prefix matrix not found.</div>;
   }
 
-  // ── Interaction handlers ────────────────────────────────────────────────────
+  // ── Handlers ────────────────────────────────────────────────────────────────
 
   const resetToIdle = () => {
     setSelectedBase(null);
@@ -286,28 +280,20 @@ export const PrefixPlayground: React.FC<{
   };
 
   const handleSelectBase = (base: Morpheme) => {
-    if (mode === 'sentence' || mode === 'result') return; // locked
-    if (selectedBase?.id === base.id) {
-      // deselect
-      resetToIdle();
-    } else {
-      setSelectedBase(base);
-      setSelectedSuffix(null);
-      setMode('judge');
-      setRevealed(false);
-      setLastResult(null);
-      setMeaningOpts(null);
-      startTimeRef.current = Date.now();
-    }
+    if (mode === 'sentence' || mode === 'result') return;
+    if (selectedBase?.id === base.id) { resetToIdle(); return; }
+    setSelectedBase(base);
+    setSelectedSuffix(null);
+    setMode('judge');
+    setRevealed(false);
+    setLastResult(null);
+    setMeaningOpts(null);
+    startTimeRef.current = Date.now();
   };
 
   const handleSelectSuffix = (suf: Morpheme) => {
     if (mode === 'sentence' || mode === 'result') return;
-    if (selectedSuffix?.id === suf.id) {
-      setSelectedSuffix(null);
-    } else {
-      setSelectedSuffix(suf);
-    }
+    setSelectedSuffix(selectedSuffix?.id === suf.id ? null : suf);
   };
 
   const handleJudge = (guessedReal: boolean) => {
@@ -324,9 +310,7 @@ export const PrefixPlayground: React.FC<{
       definition: wordKeyEntry?.definition ?? dict.definition?.definition,
       example:    wordKeyEntry?.example    ?? dict.definition?.example,
     });
-
     if (actuallyReal && !guessedReal) { setMode('judge-retry'); return; }
-
     if (actuallyReal) {
       const correctDef = wordKeyEntry?.definition ?? dict.definition?.definition ?? '';
       if (correctDef) {
@@ -358,7 +342,6 @@ export const PrefixPlayground: React.FC<{
     setMode('result');
   };
 
-  // Track made-up words when landing on result
   useEffect(() => {
     if (mode === 'result' && lastResult && !lastResult.isReal) {
       setWordsMade((prev) => {
@@ -368,19 +351,7 @@ export const PrefixPlayground: React.FC<{
     }
   }, [mode]); // eslint-disable-line
 
-  // ── Derived ─────────────────────────────────────────────────────────────────
-
-  // Color theme for the prefix
-  const prefixColor = {
-    pill:   'bg-sky-500 text-white border-sky-600',
-    ring:   'ring-sky-300',
-    text:   'text-sky-700',
-    light:  'bg-sky-50 border-sky-200',
-    chip:   'bg-sky-100 text-sky-800 border-sky-300 hover:bg-sky-200',
-    chipSel:'bg-sky-500 text-white border-sky-600 shadow shadow-sky-200',
-  };
-
-  const parts = [built.prefix, built.base, built.suffix].filter(Boolean) as Morpheme[];
+  const hasWord = !!selectedBase;
 
   // ── Render ───────────────────────────────────────────────────────────────────
 
@@ -394,7 +365,7 @@ export const PrefixPlayground: React.FC<{
             className="text-gray-400 hover:text-gray-700 font-bold flex items-center gap-1 text-sm shrink-0">
             ← Back
           </button>
-          <div className="flex items-center gap-3 min-w-0">
+          <div className="flex items-center gap-2 min-w-0">
             <span className="text-2xl shrink-0">{matrix.icon ?? '🔤'}</span>
             <div className="min-w-0">
               <div className="font-extrabold text-gray-800 text-lg leading-none">{matrix.name}</div>
@@ -416,26 +387,25 @@ export const PrefixPlayground: React.FC<{
       <div className="flex-1 max-w-5xl mx-auto w-full px-3 py-4">
         <div className="flex flex-col md:flex-row gap-4 md:items-start">
 
-          {/* ══ LEFT: Builder + chip grid ════════════════════════════════════════ */}
-          <div className="md:sticky md:top-20 md:w-72 lg:w-80 shrink-0 space-y-4">
+          {/* ══ LEFT: Slots + chip grid (sticky) ═══════════════════════════════ */}
+          <div className="md:sticky md:top-20 md:w-64 lg:w-72 shrink-0 space-y-4">
 
-            {/* Word builder card */}
+            {/* Slots card */}
             <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-4 space-y-4">
 
-              {/* Prefix label */}
-              <div className={`flex items-center justify-center gap-2 rounded-2xl px-4 py-2 ${prefixColor.light} border`}>
-                <span className={`text-2xl font-black ${prefixColor.text}`}>{fixedPrefix.text}-</span>
+              {/* Prefix meaning badge */}
+              <div className="flex items-center justify-center gap-2 bg-sky-50 border border-sky-200 rounded-2xl px-3 py-2">
+                <span className="text-xl font-black text-sky-700">{fixedPrefix.text}-</span>
                 <span className="text-sm text-gray-500 font-medium italic">"{fixedPrefix.meaning}"</span>
-                <span className="ml-auto text-xs text-sky-400 font-bold uppercase tracking-widest">FIXED</span>
               </div>
 
               {/* Slot row */}
               <div className="grid grid-cols-3 gap-2">
-                {/* Prefix slot (fixed) */}
+                {/* Prefix slot — fixed / locked */}
                 <div className="flex flex-col items-center gap-1">
-                  <div className="text-xs font-bold text-sky-500 uppercase tracking-wider">Prefix</div>
-                  <div className={`w-full rounded-2xl border-2 px-2 py-3 text-center
-                    font-black text-lg ${prefixColor.pill} select-none`}>
+                  <div className="text-xs font-bold text-sky-500 uppercase tracking-wider">Prefix ★</div>
+                  <div className="w-full rounded-2xl border-2 px-2 py-3 text-center font-black text-lg
+                    bg-sky-500 text-white border-sky-600 shadow shadow-sky-200 select-none">
                     {fixedPrefix.text}-
                   </div>
                 </div>
@@ -443,10 +413,12 @@ export const PrefixPlayground: React.FC<{
                 {/* Base slot */}
                 <div className="flex flex-col items-center gap-1">
                   <div className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Base</div>
-                  <div className={`w-full rounded-2xl border-2 px-2 py-3 text-center font-black text-lg
-                    transition-all ${selectedBase
-                      ? 'bg-emerald-500 text-white border-emerald-600 shadow shadow-emerald-200'
-                      : 'border-dashed border-emerald-300 bg-emerald-50 text-emerald-300 text-sm font-medium'}`}>
+                  <div className={`w-full rounded-2xl border-2 px-2 py-3 text-center font-black
+                    transition-all min-h-[52px] flex items-center justify-center ${
+                      selectedBase
+                        ? 'bg-emerald-500 text-white border-emerald-600 shadow shadow-emerald-200 text-lg'
+                        : 'border-dashed border-emerald-300 bg-emerald-50 text-emerald-300 text-sm'
+                    }`}>
                     {selectedBase ? selectedBase.text : '?'}
                   </div>
                 </div>
@@ -454,10 +426,12 @@ export const PrefixPlayground: React.FC<{
                 {/* Suffix slot */}
                 <div className="flex flex-col items-center gap-1">
                   <div className="text-xs font-bold text-amber-500 uppercase tracking-wider">Suffix</div>
-                  <div className={`w-full rounded-2xl border-2 px-2 py-3 text-center font-black text-lg
-                    transition-all relative ${selectedSuffix
-                      ? 'bg-amber-500 text-white border-amber-600 shadow shadow-amber-200'
-                      : 'border-dashed border-amber-200 bg-amber-50 text-amber-200 text-sm font-medium'}`}>
+                  <div className={`w-full rounded-2xl border-2 px-2 py-3 text-center font-black
+                    transition-all min-h-[52px] flex items-center justify-center relative ${
+                      selectedSuffix
+                        ? 'bg-amber-500 text-white border-amber-600 shadow shadow-amber-200 text-lg'
+                        : 'border-dashed border-amber-200 bg-amber-50 text-amber-200 text-sm'
+                    }`}>
                     {selectedSuffix ? (
                       <>
                         -{selectedSuffix.text}
@@ -465,7 +439,7 @@ export const PrefixPlayground: React.FC<{
                           <button
                             onClick={(e) => { e.stopPropagation(); setSelectedSuffix(null); }}
                             className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full
-                              bg-amber-700 text-white flex items-center justify-center text-xs leading-none">
+                              bg-amber-700 text-white flex items-center justify-center text-xs">
                             ×
                           </button>
                         )}
@@ -477,106 +451,37 @@ export const PrefixPlayground: React.FC<{
                 </div>
               </div>
 
-              {/* Formed word display */}
-              {selectedBase ? (
-                <div className="flex flex-col items-center gap-2 pt-1">
-                  {/* Big word */}
-                  <div className={`text-4xl font-black tracking-wide leading-none transition-colors duration-300 ${
-                    revealed
-                      ? lastResult?.isReal ? 'text-emerald-600' : 'text-purple-500'
-                      : 'text-gray-800'
-                  }`}>
-                    {surface}
-                  </div>
-
-                  {/* Part breakdown */}
-                  {parts.length > 1 && (
-                    <div className="flex items-start gap-1 justify-center flex-wrap">
-                      {parts.map((part, i) => {
-                        const bg   = part.type === 'prefix' ? 'bg-sky-100'     : part.type === 'base' ? 'bg-emerald-100' : 'bg-amber-100';
-                        const tc   = part.type === 'prefix' ? 'text-sky-700'   : part.type === 'base' ? 'text-emerald-700' : 'text-amber-700';
-                        return (
-                          <React.Fragment key={part.id}>
-                            {i > 0 && <span className="text-gray-300 font-bold text-lg self-center mx-0.5">+</span>}
-                            <div className={`flex flex-col items-center rounded-xl px-3 py-1.5 ${bg} min-w-[48px]`}>
-                              <span className={`text-sm font-black ${tc}`}>{part.text}</span>
-                              <span className={`text-xs font-semibold ${tc} opacity-70 text-center leading-tight`}>
-                                {part.meaning}
-                              </span>
-                            </div>
-                          </React.Fragment>
-                        );
-                      })}
-                    </div>
-                  )}
-
-                  {/* Spelling tip */}
-                  {spellingRule && selectedSuffix && (
-                    <SpellingTip rule={spellingRule} base={selectedBase.text}
-                      suffix={selectedSuffix.text} surface={surface} />
-                  )}
-
-                  {/* Revealed badge */}
-                  {revealed && (
-                    <div className={`text-sm font-bold px-4 py-1.5 rounded-2xl ${
-                      lastResult?.isReal
-                        ? 'bg-emerald-100 text-emerald-700'
-                        : 'bg-purple-100 text-purple-700'
-                    }`}>
-                      {lastResult?.isReal ? '✅ Real word!' : '🔮 Made-up word!'}
-                    </div>
-                  )}
-
-                  {/* TTS button */}
-                  {isSupported && surface.length > 1 && (
-                    <button onClick={() => speak(surface)}
-                      className="flex items-center gap-1 text-xs text-sky-400 hover:text-sky-600 transition-colors">
-                      <Volume2 className="w-3 h-3" /> Hear it
-                    </button>
-                  )}
-
-                  {/* Clear button (only when not locked) */}
-                  {mode !== 'sentence' && mode !== 'result' && (
-                    <button onClick={resetToIdle}
-                      className="flex items-center gap-1 text-xs text-gray-300 hover:text-gray-500 transition-colors">
-                      <XCircle className="w-3 h-3" /> Clear
-                    </button>
-                  )}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center py-4 text-center gap-2">
-                  <div className="text-3xl">👇</div>
-                  <p className="text-gray-400 text-sm font-medium leading-snug">
-                    Tap a base word below<br />to build a word!
-                  </p>
+              {/* Clear */}
+              {hasWord && mode !== 'sentence' && mode !== 'result' && (
+                <div className="text-center pt-1">
+                  <button onClick={resetToIdle}
+                    className="text-xs text-gray-300 hover:text-gray-500 transition flex items-center gap-1 mx-auto">
+                    <XCircle className="w-3 h-3" /> clear
+                  </button>
                 </div>
               )}
             </div>
 
-            {/* Base word chips */}
+            {/* Base chips */}
             <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-4 space-y-2">
-              <div className="text-xs font-extrabold text-gray-500 uppercase tracking-widest mb-1">
+              <div className="text-xs font-extrabold text-gray-500 uppercase tracking-widest">
                 Choose a base word
               </div>
               <div className="flex flex-wrap gap-2">
                 {matrix.bases.map((base) => {
-                  const isSelected = selectedBase?.id === base.id;
-                  const isLocked   = (mode === 'sentence' || mode === 'result') && !isSelected;
+                  const isSel    = selectedBase?.id === base.id;
+                  const isLocked = (mode === 'sentence' || mode === 'result') && !isSel;
                   return (
-                    <button
-                      key={base.id}
-                      onClick={() => handleSelectBase(base)}
-                      disabled={isLocked}
-                      title={base.meaning}
-                      className={`px-3 py-2 rounded-2xl border-2 font-extrabold text-base
+                    <button key={base.id} onClick={() => handleSelectBase(base)}
+                      disabled={isLocked} title={base.meaning}
+                      className={`px-3 py-2 rounded-2xl border-2 font-extrabold text-sm
                         transition-all active:scale-95 ${
                           isLocked
                             ? 'opacity-30 cursor-not-allowed bg-gray-50 border-gray-200 text-gray-400'
-                            : isSelected
+                            : isSel
                             ? 'bg-emerald-500 text-white border-emerald-600 shadow shadow-emerald-200 scale-105'
                             : 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100 hover:scale-105'
-                        }`}
-                    >
+                        }`}>
                       {base.text}
                     </button>
                   );
@@ -584,31 +489,28 @@ export const PrefixPlayground: React.FC<{
               </div>
             </div>
 
-            {/* Suffix chips (only if matrix has suffixes) */}
+            {/* Suffix chips */}
             {matrix.suffixes.length > 0 && (
               <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-4 space-y-2">
-                <div className="text-xs font-extrabold text-gray-500 uppercase tracking-widest mb-1">
-                  Add a suffix <span className="text-gray-300 font-normal normal-case tracking-normal">(optional)</span>
+                <div className="text-xs font-extrabold text-gray-500 uppercase tracking-widest">
+                  Add a suffix{' '}
+                  <span className="text-gray-300 font-normal normal-case tracking-normal">(optional)</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {matrix.suffixes.map((suf) => {
-                    const isSelected = selectedSuffix?.id === suf.id;
-                    const isLocked   = !selectedBase || mode === 'sentence' || mode === 'result';
+                    const isSel    = selectedSuffix?.id === suf.id;
+                    const isLocked = !selectedBase || mode === 'sentence' || mode === 'result';
                     return (
-                      <button
-                        key={suf.id}
-                        onClick={() => handleSelectSuffix(suf)}
-                        disabled={isLocked}
-                        title={suf.meaning}
-                        className={`px-3 py-2 rounded-2xl border-2 font-extrabold text-base
+                      <button key={suf.id} onClick={() => handleSelectSuffix(suf)}
+                        disabled={isLocked} title={suf.meaning}
+                        className={`px-3 py-2 rounded-2xl border-2 font-extrabold text-sm
                           transition-all active:scale-95 ${
                             isLocked
                               ? 'opacity-30 cursor-not-allowed bg-gray-50 border-gray-200 text-gray-400'
-                              : isSelected
+                              : isSel
                               ? 'bg-amber-500 text-white border-amber-600 shadow shadow-amber-200 scale-105'
                               : 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100 hover:scale-105'
-                          }`}
-                      >
+                          }`}>
                         -{suf.text}
                       </button>
                     );
@@ -619,94 +521,170 @@ export const PrefixPlayground: React.FC<{
 
             {/* Words made this session */}
             {wordsMade.length > 0 && (
-              <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-4">
-                <div className="text-xs font-extrabold text-gray-500 uppercase tracking-widest mb-2">
-                  Words you've built ✨
+              <div className="bg-amber-50 border-2 border-amber-200 rounded-3xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="font-extrabold text-amber-800 uppercase tracking-wide text-xs">
+                    Words You've Built
+                  </span>
+                  <span className="ml-auto text-xs font-bold bg-amber-200 text-amber-800 px-1.5 py-0.5 rounded-full">
+                    {wordsMade.length}
+                  </span>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {wordsMade.map(({ word }, i) => (
-                    <span key={i} className="px-3 py-1.5 bg-emerald-50 border border-emerald-200
-                      rounded-2xl text-sm font-bold text-emerald-700">
-                      {word}
-                    </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {wordsMade.map(({ word, sentence }, i) => (
+                    <div key={`${word}-${i}`}
+                      className="bg-white border border-amber-200 rounded-xl px-2.5 py-1 text-xs"
+                      title={sentence ?? ''}>
+                      <span className="font-bold text-gray-800">{word}</span>
+                      {sentence && <span className="text-gray-400 ml-1 italic">✏️</span>}
+                    </div>
                   ))}
                 </div>
               </div>
             )}
           </div>
 
-          {/* ══ RIGHT: Judge / Sentence / Result panel ════════════════════════════ */}
-          <div className="flex-1 min-w-0">
+          {/* ══ RIGHT: Word display + action panel (mirrors StudentPlayground) ══ */}
+          <div className="flex-1 min-w-0 space-y-4">
 
+            {/* ── Word display card — shown whenever a base is selected ── */}
+            {hasWord && (
+              <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm px-5 py-6">
+                {parts.length === 0 || !selectedBase ? (
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <div className="text-4xl mb-2">👆</div>
+                    <p className="text-gray-400 text-sm font-medium">
+                      Tap a base word to build!
+                    </p>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-3">
+                    {/* Big assembled word */}
+                    <div className={`text-5xl font-black tracking-wide leading-none transition-colors duration-300 ${
+                      revealed
+                        ? lastResult?.isReal ? 'text-emerald-600' : 'text-purple-500'
+                        : 'text-gray-800'
+                    }`}>
+                      {surface}
+                    </div>
+
+                    {/* Morpheme breakdown */}
+                    {parts.length > 1 && (
+                      <div className="flex items-start gap-1 justify-center flex-wrap">
+                        {parts.map((part, i) => {
+                          const bg = part.type === 'prefix' ? 'bg-sky-100'     : part.type === 'base' ? 'bg-emerald-100' : 'bg-amber-100';
+                          const tc = part.type === 'prefix' ? 'text-sky-700'   : part.type === 'base' ? 'text-emerald-700' : 'text-amber-700';
+                          return (
+                            <React.Fragment key={part.id}>
+                              {i > 0 && <span className="text-gray-300 font-bold text-xl self-center mx-0.5">+</span>}
+                              <div className={`flex flex-col items-center rounded-xl px-3 py-2 ${bg} min-w-[52px]`}>
+                                <span className={`text-base font-black ${tc}`}>{part.text}</span>
+                                <span className={`text-sm font-semibold ${tc} opacity-80 text-center leading-tight mt-0.5`}>
+                                  {part.meaning}
+                                </span>
+                              </div>
+                            </React.Fragment>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {/* Spelling tip */}
+                    {spellingRule && selectedSuffix && (
+                      <SpellingTip rule={spellingRule} base={selectedBase.text}
+                        suffix={selectedSuffix.text} surface={surface} />
+                    )}
+
+                    {/* Reveal badge */}
+                    {revealed && (
+                      <div className={`text-sm font-bold px-4 py-1.5 rounded-2xl ${
+                        lastResult?.isReal
+                          ? 'bg-emerald-100 text-emerald-700'
+                          : 'bg-purple-100 text-purple-700'
+                      }`}>
+                        {lastResult?.isReal ? '✅ Real word!' : '🔮 Made-up word!'}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Speak button */}
+                {isSupported && surface.length > 1 && (
+                  <div className="flex justify-center mt-3">
+                    <button onClick={() => speak(surface)}
+                      className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-600 transition">
+                      <Volume2 className="w-4 h-4" /> Hear it
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── Idle prompt — no base selected yet ── */}
             {mode === 'idle' && (
               <div className="bg-white rounded-3xl border-2 border-dashed border-gray-200 p-8
                 flex flex-col items-center justify-center gap-4 text-center">
                 <div className="text-5xl">👈</div>
                 <h2 className="text-xl font-extrabold text-gray-700">Pick a base word!</h2>
                 <p className="text-gray-400 text-base leading-relaxed max-w-xs">
-                  Tap any base word on the left to build a word with the prefix{' '}
+                  Tap any base word on the left to build a word with{' '}
                   <span className="font-black text-sky-600">{fixedPrefix.text}-</span>.
-                  Then decide if it's a <span className="font-bold text-emerald-600">real word</span> or{' '}
+                  Then decide if it's a{' '}
+                  <span className="font-bold text-emerald-600">real word</span> or{' '}
                   <span className="font-bold text-purple-500">made up</span>!
                 </p>
-                {/* Quick category hint */}
-                <div className={`px-4 py-2 rounded-2xl border text-sm font-semibold ${prefixColor.light} ${prefixColor.text}`}>
+                <div className="px-4 py-2 rounded-2xl border bg-sky-50 border-sky-200
+                  text-sm font-semibold text-sky-700">
                   {fixedPrefix.text}- means "{fixedPrefix.meaning}"
                 </div>
               </div>
             )}
 
+            {/* ── Judge buttons ── */}
             {mode === 'judge' && (
-              <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-6 space-y-5">
-                <div className="text-center space-y-1">
-                  <div className="text-4xl font-black text-gray-800 tracking-wide">{surface}</div>
-                  <p className="text-gray-500 text-base font-medium">
-                    Is <span className="font-black text-gray-700 italic">{surface}</span> a real English word?
-                  </p>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
+              <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-5 space-y-3">
+                <p className="text-center text-lg font-extrabold text-gray-600">
+                  Is <span className="text-gray-800 italic">{surface}</span> a real word?
+                </p>
+                <div className="flex gap-3">
                   <button onClick={() => handleJudge(true)}
-                    className="py-5 rounded-3xl bg-emerald-500 text-white font-extrabold text-xl
-                      hover:bg-emerald-600 active:scale-95 transition-all shadow-lg shadow-emerald-200
-                      flex flex-col items-center gap-1">
-                    <span className="text-3xl">✅</span>
-                    Real Word!
+                    className="flex-1 py-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50
+                      text-emerald-700 font-extrabold text-lg hover:bg-emerald-500 hover:text-white
+                      hover:border-emerald-500 transition-all active:scale-95">
+                    ✅ Real!
                   </button>
                   <button onClick={() => handleJudge(false)}
-                    className="py-5 rounded-3xl bg-purple-500 text-white font-extrabold text-xl
-                      hover:bg-purple-600 active:scale-95 transition-all shadow-lg shadow-purple-200
-                      flex flex-col items-center gap-1">
-                    <span className="text-3xl">🔮</span>
-                    Made Up!
+                    className="flex-1 py-4 rounded-2xl border-2 border-purple-200 bg-purple-50
+                      text-purple-700 font-extrabold text-lg hover:bg-purple-500 hover:text-white
+                      hover:border-purple-500 transition-all active:scale-95">
+                    🔮 Made-Up!
                   </button>
                 </div>
-                <p className="text-center text-xs text-gray-400 font-medium">
-                  Think about the word parts — does {fixedPrefix.text}- + {selectedBase?.text}{selectedSuffix ? ` + -${selectedSuffix.text}` : ''} make sense?
-                </p>
               </div>
             )}
 
-            {mode === 'judge-retry' && lastResult && (
-              <div className="bg-orange-50 border-2 border-orange-300 rounded-3xl p-6 space-y-4">
-                <div className="text-center space-y-2">
-                  <div className="text-4xl">🤔</div>
-                  <h3 className="text-xl font-extrabold text-orange-800">
-                    Actually, <span className="italic">{lastResult.word}</span> IS a real word!
-                  </h3>
-                  {lastResult.definition && (
-                    <p className="text-orange-700 text-sm font-medium leading-snug">
-                      It means: {lastResult.definition}
-                    </p>
-                  )}
+            {/* ── Judge retry ── */}
+            {mode === 'judge-retry' && (
+              <div className="bg-orange-50 border-2 border-orange-300 rounded-3xl p-5 space-y-4">
+                <div className="text-center space-y-1">
+                  <div className="text-3xl">🧐</div>
+                  <p className="text-lg font-extrabold text-orange-700">
+                    Actually, <span className="italic">{surface}</span> is a real word!
+                  </p>
+                  <p className="text-sm text-orange-600">
+                    Look at the word parts — they add up to a real meaning.
+                  </p>
                 </div>
                 <button onClick={handleRetryReal}
-                  className="w-full py-4 rounded-2xl bg-emerald-500 text-white font-extrabold text-lg
-                    hover:bg-emerald-600 active:scale-95 transition-all">
+                  className="w-full py-4 rounded-2xl border-2 border-emerald-400 bg-emerald-50
+                    text-emerald-700 font-extrabold text-lg hover:bg-emerald-500 hover:text-white
+                    hover:border-emerald-500 transition-all active:scale-95">
                   ✅ You're right, it's Real!
                 </button>
               </div>
             )}
 
+            {/* ── Meaning check ── */}
             {mode === 'meaning-check' && meaningOpts && (
               <MeaningChecker
                 word={surface}
@@ -716,70 +694,57 @@ export const PrefixPlayground: React.FC<{
               />
             )}
 
-            {mode === 'sentence' && (
-              <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-6">
+            {/* ── Sentence writing ── */}
+            {mode === 'sentence' && lastResult && (
+              <div className="bg-blue-50 border-2 border-blue-200 rounded-3xl p-5">
                 <SentenceWriter
-                  word={surface}
-                  definition={lastResult?.definition}
-                  example={lastResult?.example}
+                  word={lastResult.word}
+                  definition={lastResult.definition}
+                  example={lastResult.example}
                   onDone={(sentence, passed) => handleSentenceDone(sentence)}
                 />
               </div>
             )}
 
+            {/* ── Result ── */}
             {mode === 'result' && lastResult && (
-              <div className={`rounded-3xl border-2 p-6 space-y-4 ${
+              <div className={`rounded-3xl border-2 p-5 text-center space-y-2 ${
                 lastResult.correct
-                  ? 'bg-emerald-50 border-emerald-200'
-                  : 'bg-blue-50 border-blue-200'
+                  ? 'bg-emerald-50 border-emerald-300'
+                  : 'bg-orange-50 border-orange-200'
               }`}>
-                {/* Header */}
-                <div className="text-center space-y-1">
-                  <div className="text-4xl">
-                    {lastResult.correct ? '🎉' : '💡'}
-                  </div>
-                  <div className="text-3xl font-black text-gray-800">{lastResult.word}</div>
-                  <div className={`text-lg font-extrabold ${
-                    lastResult.isReal ? 'text-emerald-700' : 'text-purple-600'
-                  }`}>
-                    {lastResult.isReal ? '✅ Real word!' : '🔮 Made-up word!'}
-                  </div>
+                <div className="text-4xl">{lastResult.correct ? '🎉' : '🧠'}</div>
+                <div className={`font-extrabold text-xl ${
+                  lastResult.correct ? 'text-emerald-700' : 'text-orange-600'
+                }`}>
+                  {lastResult.correct ? 'Great thinking!' : 'Good try!'}
                 </div>
-
-                {/* Definition */}
-                {lastResult.isReal && lastResult.definition && (
-                  <div className="bg-white rounded-2xl border border-gray-100 p-4 space-y-1">
-                    <div className="text-xs font-bold text-gray-400 uppercase tracking-widest">Meaning</div>
-                    <div className="text-gray-700 font-medium leading-snug">{lastResult.definition}</div>
-                    {lastResult.example && (
-                      <div className="text-sm text-gray-500 italic mt-1">"{lastResult.example}"</div>
-                    )}
-                  </div>
+                <p className="text-base text-gray-600">
+                  <strong>{lastResult.word}</strong>{' '}
+                  {lastResult.isReal ? 'is a real word! ✅' : 'is not in the dictionary.'}
+                </p>
+                {lastResult.definition && (
+                  <p className="text-sm text-gray-500 italic border-t border-gray-200 pt-2">
+                    {lastResult.definition}
+                  </p>
                 )}
-
-                {/* Sentence they wrote */}
                 {lastResult.sentence && (
-                  <div className="bg-white rounded-2xl border border-gray-100 p-4 space-y-1">
-                    <div className="text-xs font-bold text-gray-400 uppercase tracking-widest">Your sentence</div>
-                    <div className="text-gray-700 font-medium leading-snug italic">"{lastResult.sentence}"</div>
+                  <div className="bg-white rounded-2xl border border-blue-200 px-4 py-2 text-left">
+                    <p className="text-xs font-bold text-blue-500 uppercase tracking-wide mb-1">
+                      Your sentence ✏️
+                    </p>
+                    <p className="text-sm text-gray-700 italic">"{lastResult.sentence}"</p>
                   </div>
                 )}
-
-                {/* Try another */}
                 <button onClick={resetToIdle}
-                  className="w-full py-4 rounded-2xl bg-sky-500 text-white font-extrabold text-lg
-                    hover:bg-sky-600 active:scale-95 transition-all">
-                  Try another word! 🔄
+                  className="inline-flex items-center gap-2 px-6 py-3 mt-1 rounded-2xl
+                    bg-sky-500 text-white font-extrabold text-base hover:bg-sky-600
+                    active:scale-95 transition-all">
+                  <RefreshCw className="w-4 h-4" /> Try Another
                 </button>
-
-                {/* Words made */}
-                {wordsMade.length > 0 && (
-                  <div className="text-center text-sm text-gray-400">
-                    You've built <span className="font-bold text-emerald-600">{wordsMade.length}</span> word{wordsMade.length !== 1 ? 's' : ''} so far!
-                  </div>
-                )}
               </div>
             )}
+
           </div>
         </div>
       </div>
