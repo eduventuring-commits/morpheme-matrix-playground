@@ -38,14 +38,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStudentMode, onTeach
             <div className="font-extrabold text-xl">I'm a Student</div>
             <div className="text-primary-200 text-sm mt-1">Play & explore words</div>
           </button>
-          <button
-            onClick={onTeacherMode}
-            className="flex-1 bg-gradient-to-br from-amber-400 to-orange-500 text-white rounded-3xl p-6 text-center shadow-xl hover:shadow-2xl hover:scale-105 transition-all active:scale-100"
-          >
-            <div className="text-5xl mb-2">🍎</div>
-            <div className="font-extrabold text-xl">I'm a Teacher</div>
-            <div className="text-amber-100 text-sm mt-1">Manage classes & view progress</div>
-          </button>
+          <div className="flex-1 flex flex-col items-center">
+            <button
+              disabled
+              className="w-full bg-gradient-to-br from-amber-200 to-orange-300 text-white rounded-3xl p-6 text-center shadow-md opacity-60 cursor-not-allowed"
+            >
+              <div className="text-5xl mb-2">🍎</div>
+              <div className="font-extrabold text-xl">I'm a Teacher</div>
+              <div className="text-amber-100 text-sm mt-1">Manage classes & view progress</div>
+            </button>
+            <div className="mt-2 text-xs font-extrabold tracking-widest text-amber-500 uppercase">
+              Coming Soon!
+            </div>
+          </div>
         </div>
 
         {/* Quick stats */}
