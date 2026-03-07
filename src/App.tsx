@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { LandingPage } from './components/shared/LandingPage';
 import { StudentSelect } from './components/student/StudentSelect';
 import { StudentPlayground } from './components/student/StudentPlayground';
+import { PrefixPlayground } from './components/student/PrefixPlayground';
 import { TeacherDashboard } from './components/teacher/TeacherDashboard';
 import { MatrixEditor } from './components/teacher/MatrixEditor';
 
@@ -9,6 +10,7 @@ type Screen =
   | { name: 'landing' }
   | { name: 'student-select' }
   | { name: 'student-play'; studentId: string; matrixId: string; startBaseIndex: number }
+  | { name: 'prefix-play'; matrixId: string }
   | { name: 'teacher-dashboard' }
   | { name: 'matrix-editor'; matrixId: string | null };
 
@@ -30,6 +32,9 @@ export default function App() {
           onSelectStudent={(studentId, matrixId, startBaseIndex = 0) =>
             goto({ name: 'student-play', studentId, matrixId, startBaseIndex })
           }
+          onSelectPrefixMatrix={(matrixId) =>
+            goto({ name: 'prefix-play', matrixId })
+          }
           onBack={() => goto({ name: 'landing' })}
         />
       )}
@@ -38,6 +43,12 @@ export default function App() {
           studentId={screen.studentId}
           matrixId={screen.matrixId}
           startBaseIndex={screen.startBaseIndex}
+          onBack={() => goto({ name: 'student-select' })}
+        />
+      )}
+      {screen.name === 'prefix-play' && (
+        <PrefixPlayground
+          matrixId={screen.matrixId}
           onBack={() => goto({ name: 'student-select' })}
         />
       )}
