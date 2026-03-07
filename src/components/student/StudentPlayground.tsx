@@ -634,6 +634,7 @@ const SentenceWriter: React.FC<{
 type RightPanelMode =
   | 'idle'           // just the base — no prefix/suffix chosen yet
   | 'judge'          // word built, awaiting Real/Made-Up
+  | 'judge-retry'    // user said Made-Up but word is real — show correction + retry
   | 'meaning-check'  // word judged real — pick the correct definition
   | 'sentence'       // meaning confirmed — write a sentence
   | 'result';        // feedback shown, ready to continue
@@ -773,7 +774,13 @@ export const StudentPlayground: React.FC<{
       example:    wordKeyEntry?.example    ?? dict.definition?.example,
     });
 
-    // If it's a real word, go to meaning-check (if definition available) then sentence
+    // If the word is real but the student said Made-Up → show correction card
+    if (actuallyReal && !guessedReal) {
+      setMode('judge-retry');
+      return;
+    }
+
+    // If it's a real word (and they guessed real), go to meaning-check then sentence
     if (actuallyReal) {
       const correctDef = wordKeyEntry?.definition ?? dict.definition?.definition ?? '';
       if (correctDef) {
@@ -785,6 +792,18 @@ export const StudentPlayground: React.FC<{
       }
     } else {
       setMode('result');
+    }
+  };
+
+  // Called when student corrects their guess after seeing the judge-retry card
+  const handleRetryReal = () => {
+    const correctDef = wordKeyEntry?.definition ?? dict.definition?.definition ?? '';
+    if (correctDef) {
+      const distractor = pickDistractor(correctDef, getAllMatrices());
+      setMeaningOptions({ correct: correctDef, distractor });
+      setMode('meaning-check');
+    } else {
+      setMode('sentence');
     }
   };
 
@@ -1046,6 +1065,29 @@ export const StudentPlayground: React.FC<{
                       </div>
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* ── Judge retry (guessed Made-Up but word is real) ── */}
+              {mode === 'judge-retry' && (
+                <div className="bg-orange-50 border-2 border-orange-300 rounded-3xl p-5 space-y-4">
+                  <div className="text-center space-y-1">
+                    <div className="text-3xl">🧐</div>
+                    <p className="text-lg font-extrabold text-orange-700">
+                      Actually, <span className="italic">{surface}</span> is a real word!
+                    </p>
+                    <p className="text-sm text-orange-600">
+                      Look at the word parts — they add up to a real meaning.
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleRetryReal}
+                    className="w-full py-4 rounded-2xl border-2 border-emerald-400 bg-emerald-50
+                      text-emerald-700 font-extrabold text-lg hover:bg-emerald-500 hover:text-white
+                      hover:border-emerald-500 transition-all active:scale-95"
+                  >
+                    ✅ You're right, it's Real!
+                  </button>
                 </div>
               )}
 
