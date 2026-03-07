@@ -34,9 +34,17 @@ function relevantMorphemes(
     return { prefixes: matrix.prefixes, suffixes: matrix.suffixes };
   }
   const baseText = base.text.toLowerCase();
-  const wordsWithBase = matrix.wordKey.filter((w) =>
-    w.word.toLowerCase().includes(baseText)
-  );
+  const wordsWithBase = matrix.wordKey.filter((w) => {
+    const word = w.word.toLowerCase();
+    if (word.includes(baseText)) return true;
+    // Also match words containing the stem without a trailing silent-e
+    // (e.g. base 'scribe' → stem 'scrib' matches 'describing', 'describable')
+    if (baseText.endsWith('e') && baseText.length > 2) {
+      const stem = baseText.slice(0, -1);
+      if (word.includes(stem)) return true;
+    }
+    return false;
+  });
   if (wordsWithBase.length === 0) {
     return { prefixes: matrix.prefixes, suffixes: matrix.suffixes };
   }
