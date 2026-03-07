@@ -13,9 +13,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStudentMode, onTeach
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-100 via-white to-emerald-100 flex flex-col">
       {/* Hero */}
-      <div className="flex-1 flex flex-col items-center justify-center text-center px-4 py-16">
-        <div className="text-7xl mb-4 animate-bounce-gentle">🧩</div>
-        <h1 className="text-5xl sm:text-6xl font-black text-gray-800 mb-3 leading-tight">
+      <div className="flex-1 flex flex-col items-center justify-center text-center px-4 py-8 sm:py-16">
+        <div className="text-5xl sm:text-7xl mb-3 sm:mb-4 animate-bounce-gentle">🧩</div>
+        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-gray-800 mb-3 leading-tight">
           Morpheme Matrix
           <br />
           <span className="bg-gradient-to-r from-primary-600 to-accent-500 bg-clip-text text-transparent">
@@ -82,7 +82,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStudentMode, onTeach
 
       {/* Feature highlights */}
       <div className="bg-white/80 border-t border-gray-100 px-4 py-8">
-        <div className="max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+        <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
           {[
             { icon: '🧩', label: '6 Built-in Matrices', desc: 'Greek roots, Latin roots, suffixes & more' },
             { icon: '📊', label: 'Progress Tracking',   desc: 'Per-student accuracy and history' },

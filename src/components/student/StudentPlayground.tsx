@@ -896,11 +896,11 @@ export const StudentPlayground: React.FC<{
         </div>
 
         {/* ── Two-column layout ────────────────────────────────────────────── */}
-        <div className="flex-1 max-w-5xl mx-auto w-full px-4 py-5">
-          <div className="flex flex-col lg:flex-row gap-5 lg:items-start">
+        <div className="flex-1 max-w-5xl mx-auto w-full px-3 py-4">
+          <div className="flex flex-col md:flex-row gap-4 md:items-start">
 
             {/* ══ LEFT: Builder panel (sticky) ══════════════════════════════ */}
-            <div className="lg:sticky lg:top-20 lg:w-72 xl:w-80 shrink-0 space-y-4">
+            <div className="md:sticky md:top-20 md:w-64 lg:w-72 shrink-0 space-y-4">
 
               {/* Base navigator */}
               {matrix.bases.length > 1 && (
