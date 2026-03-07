@@ -494,8 +494,8 @@ export const SYSTEM_MATRICES: MorphemeMatrix[] = [
   // ── MATRIX 11: Latin scrib/script — write ─────────────────────────────────
   {
     id: 'mat-011',
-    name: 'Latin Root: scrib/script (write)',
-    description: 'Explore how "scrib" and "script" (write) build words like describe, prescribe, and manuscript.',
+    name: 'Latin Root: scribe/script (write)',
+    description: 'Explore how "scribe" and "script" (write) build words like describe, prescribe, and manuscript.',
     gradeLevel: ['4', '5', '6'],
     color: 'purple',
     icon: '✍️',
@@ -509,12 +509,11 @@ export const SYSTEM_MATRICES: MorphemeMatrix[] = [
       { id: 'p-scrib-sub', text: 'sub', type: 'prefix', meaning: 'under',       origin: 'Latin' },
     ],
     bases: [
-      { id: 'b-scrib',   text: 'scrib',  type: 'base', meaning: 'write', origin: 'Latin', examples: ['describe', 'prescribe', 'inscribe'] },
+      { id: 'b-scribe',  text: 'scribe', type: 'base', meaning: 'write', origin: 'Latin', examples: ['describe', 'prescribe', 'inscribe'] },
       { id: 'b-script',  text: 'script', type: 'base', meaning: 'written', origin: 'Latin', examples: ['scripture', 'transcript', 'manuscript'] },
     ],
     suffixes: [
       { id: 's-scrib-s',    text: 's',    type: 'suffix', meaning: 'plural / verb' },
-      { id: 's-scrib-e',    text: 'e',    type: 'suffix', meaning: 'verb form' },
       { id: 's-scrib-ed',   text: 'ed',   type: 'suffix', meaning: 'past tense' },
       { id: 's-scrib-ing',  text: 'ing',  type: 'suffix', meaning: 'ongoing action' },
       { id: 's-scrib-er',   text: 'er',   type: 'suffix', meaning: 'one who' },
@@ -912,11 +911,11 @@ export const SYSTEM_MATRICES: MorphemeMatrix[] = [
       { id: 'p-pos-pro', text: 'pro', type: 'prefix', meaning: 'forward',   origin: 'Latin' },
     ],
     bases: [
-      { id: 'b-pos',   text: 'pos',   type: 'base', meaning: 'put / place', origin: 'Latin', examples: ['compose', 'expose', 'deposit', 'impose'] },
+      { id: 'b-pos',   text: 'pos',   type: 'base', meaning: 'put / place', origin: 'Latin', examples: ['position', 'composition', 'imposition'] },
+      { id: 'b-pose',  text: 'pose',  type: 'base', meaning: 'put / place', origin: 'Latin', examples: ['compose', 'expose', 'impose', 'dispose'] },
       { id: 'b-pound', text: 'pound', type: 'base', meaning: 'put / place', origin: 'Latin', examples: ['compound', 'expound', 'impound'] },
     ],
     suffixes: [
-      { id: 's-pos-e',    text: 'e',    type: 'suffix', meaning: 'verb form' },
       { id: 's-pos-s',    text: 's',    type: 'suffix', meaning: 'plural / verb' },
       { id: 's-pos-ed',   text: 'ed',   type: 'suffix', meaning: 'past tense' },
       { id: 's-pos-ing',  text: 'ing',  type: 'suffix', meaning: 'ongoing action' },
@@ -926,18 +925,45 @@ export const SYSTEM_MATRICES: MorphemeMatrix[] = [
       { id: 's-pos-al',   text: 'al',   type: 'suffix', meaning: 'relating to' },
     ],
     wordKey: [
-      { word: 'compose',    definition: 'to put together; to create music or writing', partOfSpeech: 'verb', example: 'She composed a beautiful song.' },
+      // compose (com + pose)
+      { word: 'compose',    definition: 'to put together; to create music or writing', partOfSpeech: 'verb', example: 'She will compose a beautiful song.' },
+      { word: 'composes',   definition: 'puts together; creates', partOfSpeech: 'verb', example: 'He composes music every morning.' },
+      { word: 'composed',   definition: 'put together; calm and collected', partOfSpeech: 'adj', example: 'She remained composed under pressure.' },
+      { word: 'composing',  definition: 'putting together; creating', partOfSpeech: 'verb', example: 'He is composing a new symphony.' },
       { word: 'composer',   definition: 'one who composes', partOfSpeech: 'noun', example: 'Beethoven was a famous composer.' },
       { word: 'composition',definition: 'the way parts are put together; a piece of writing', partOfSpeech: 'noun', example: 'Write a composition for homework.' },
+      // expose (ex + pose)
       { word: 'expose',     definition: 'to put out in the open', partOfSpeech: 'verb', example: 'Don\'t expose the film to light.' },
+      { word: 'exposes',    definition: 'puts out in the open', partOfSpeech: 'verb', example: 'The report exposes the truth.' },
+      { word: 'exposed',    definition: 'put out in the open; unprotected', partOfSpeech: 'adj', example: 'The exposed wire is dangerous.' },
+      { word: 'exposing',   definition: 'putting out in the open', partOfSpeech: 'verb', example: 'She is exposing the fraud.' },
       { word: 'exposure',   definition: 'the state of being exposed', partOfSpeech: 'noun', example: 'Exposure to sunlight can burn skin.' },
-      { word: 'impose',     definition: 'to put into force; to burden', partOfSpeech: 'verb', example: 'Don\'t impose on your friends.' },
+      // impose (im + pose)
+      { word: 'impose',     definition: 'to put into force; to burden someone', partOfSpeech: 'verb', example: 'Don\'t impose on your friends.' },
+      { word: 'imposes',    definition: 'puts into force; burdens', partOfSpeech: 'verb', example: 'The new rule imposes strict limits.' },
+      { word: 'imposed',    definition: 'put into force', partOfSpeech: 'adj', example: 'The imposed curfew frustrated everyone.' },
+      { word: 'imposing',   definition: 'putting into force; impressive in size', partOfSpeech: 'verb/adj', example: 'The imposing castle stood on the hill.' },
+      { word: 'imposition', definition: 'the act of putting something in force', partOfSpeech: 'noun', example: 'The imposition of the tax was unpopular.' },
+      // dispose (dis + pose)
       { word: 'dispose',    definition: 'to put away; to get rid of', partOfSpeech: 'verb', example: 'Dispose of waste properly.' },
-      { word: 'deposit',    definition: 'to put down; money put in a bank', partOfSpeech: 'verb/noun', example: 'Make a deposit at the bank.' },
+      { word: 'disposes',   definition: 'puts away; gets rid of', partOfSpeech: 'verb', example: 'She disposes of old papers weekly.' },
+      { word: 'disposed',   definition: 'put away; willing or inclined', partOfSpeech: 'adj', example: 'He is well disposed toward the plan.' },
+      { word: 'disposing',  definition: 'putting away; getting rid of', partOfSpeech: 'verb', example: 'They are disposing of old equipment.' },
+      { word: 'disposal',   definition: 'the act of getting rid of something', partOfSpeech: 'noun', example: 'The waste disposal truck came today.' },
+      // propose (pro + pose)
       { word: 'propose',    definition: 'to put forward a plan or offer', partOfSpeech: 'verb', example: 'I propose we vote on it.' },
+      { word: 'proposes',   definition: 'puts forward a plan', partOfSpeech: 'verb', example: 'She proposes a new solution.' },
+      { word: 'proposed',   definition: 'put forward as a plan', partOfSpeech: 'adj', example: 'The proposed law needs more review.' },
+      { word: 'proposing',  definition: 'putting forward a plan', partOfSpeech: 'verb', example: 'He is proposing a budget change.' },
       { word: 'proposal',   definition: 'a plan put forward', partOfSpeech: 'noun', example: 'Submit your proposal by Friday.' },
+      // pos + tion words (use pos base)
       { word: 'position',   definition: 'the place where something is put', partOfSpeech: 'noun', example: 'What position do you play?' },
+      { word: 'deposition', definition: 'the act of putting someone or something down', partOfSpeech: 'noun', example: 'The deposition was given in court.' },
+      { word: 'deposit',    definition: 'to put down; money put in a bank', partOfSpeech: 'verb/noun', example: 'Make a deposit at the bank.' },
+      // pound base
       { word: 'compound',   definition: 'put together; a mixture or enclosed area', partOfSpeech: 'adj/noun', example: 'Water is a compound of H and O.' },
+      { word: 'expound',    definition: 'to put out in detail; to explain fully', partOfSpeech: 'verb', example: 'Please expound on your idea.' },
+      { word: 'impound',    definition: 'to put and keep in a pound or storage', partOfSpeech: 'verb', example: 'The police impound illegally parked cars.' },
     ],
   },
 
