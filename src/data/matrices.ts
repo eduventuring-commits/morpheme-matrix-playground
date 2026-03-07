@@ -316,6 +316,7 @@ export const SYSTEM_MATRICES: MorphemeMatrix[] = [
       { id: 'p-port-im',    text: 'im',    type: 'prefix', meaning: 'into / toward', origin: 'Latin' },
       { id: 'p-port-re',    text: 're',    type: 'prefix', meaning: 'again / back',  origin: 'Latin' },
       { id: 'p-port-de',    text: 'de',    type: 'prefix', meaning: 'away from',     origin: 'Latin' },
+      { id: 'p-port-ex',    text: 'ex',    type: 'prefix', meaning: 'out / out of',  origin: 'Latin' },
     ],
     bases: [
       { id: 'b-port', text: 'port', type: 'base', meaning: 'carry', origin: 'Latin', examples: ['import', 'export', 'transport', 'report', 'portable'] },
@@ -358,6 +359,13 @@ export const SYSTEM_MATRICES: MorphemeMatrix[] = [
       { word: 'deported',   definition: 'sent out of a country', partOfSpeech: 'adj', example: 'The deported family sought asylum.' },
       { word: 'deportation',definition: 'the act of carrying someone out of a country', partOfSpeech: 'noun', example: 'Deportation orders were issued.' },
       { word: 'deportable', definition: 'subject to being sent out of a country', partOfSpeech: 'adj', example: 'The offense was deportable.' },
+      // export (ex + port)
+      { word: 'export',     definition: 'to carry goods out of a country', partOfSpeech: 'verb/noun', example: 'Canada exports lumber to many countries.' },
+      { word: 'exports',    definition: 'carries out; goods sent out', partOfSpeech: 'verb/noun', example: 'The country exports more than it imports.' },
+      { word: 'exported',   definition: 'carried out to another country', partOfSpeech: 'adj', example: 'The exported goods arrived by ship.' },
+      { word: 'exporting',  definition: 'carrying goods out of a country', partOfSpeech: 'verb', example: 'They are exporting cars overseas.' },
+      { word: 'exporter',   definition: 'one who sends goods out of a country', partOfSpeech: 'noun', example: 'Brazil is a major exporter of coffee.' },
+      { word: 'exportable', definition: 'able to be exported', partOfSpeech: 'adj', example: 'Not all goods are exportable.' },
     ],
   },
 
