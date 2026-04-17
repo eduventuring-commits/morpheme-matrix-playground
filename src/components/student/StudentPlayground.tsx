@@ -903,12 +903,12 @@ export const StudentPlayground: React.FC<{
           </div>
         </div>
 
-        {/* ── Two-column layout ────────────────────────────────────────────── */}
-        <div className="flex-1 max-w-5xl mx-auto w-full px-3 py-4">
+        {/* ── Three-column layout ──────────────────────────────────────────── */}
+        <div className="flex-1 max-w-6xl mx-auto w-full px-3 py-4">
           <div className="flex flex-col md:flex-row gap-4 md:items-start">
 
-            {/* ══ LEFT: Builder panel (sticky) ══════════════════════════════ */}
-            <div className="md:sticky md:top-20 md:w-64 lg:w-72 shrink-0 space-y-4">
+            {/* ══ LEFT: Prefix panel (sticky) ═══════════════════════════════ */}
+            <div className="md:sticky md:top-20 md:w-52 lg:w-60 shrink-0 space-y-4">
 
               {/* Base navigator */}
               {matrix.bases.length > 1 && (
@@ -939,78 +939,19 @@ export const StudentPlayground: React.FC<{
                 </div>
               )}
 
-              {/* Drop slots + chips all in one card */}
-              <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-4 space-y-4">
-
-                {/* Slot row */}
-                <div className="grid grid-cols-3 gap-2">
-                  <DropSlot
+              {/* Prefix carousel */}
+              {relevantPrefixes.length > 0 && (
+                <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-4">
+                  <MorphemeCarousel
+                    morphemes={relevantPrefixes}
+                    selected={built.prefix}
+                    onToggle={toggleMorpheme}
+                    label="Prefixes"
                     type="prefix"
-                    morpheme={built.prefix}
-                    onRemove={() => { setBuilt((p) => ({ ...p, prefix: undefined })); setLastResult(null); setRevealed(false); setMode(parts.length > 2 ? 'judge' : 'idle'); }}
-                    label="Prefix"
-                    emptyLabel="prefix"
-                  />
-
-                  {/* Base — locked */}
-                  <div className="flex flex-col items-center justify-center rounded-2xl border-2
-                    bg-emerald-500 border-emerald-600 text-white min-h-[76px] px-1 py-2 shadow-md">
-                    <div className="text-xs font-bold uppercase tracking-widest opacity-70 mb-0.5">Base ★</div>
-                    <div className="text-xl font-black">{currentBase.text}</div>
-                    <div className="text-xs font-semibold opacity-75 text-center leading-tight mt-0.5">
-                      {currentBase.meaning}
-                    </div>
-                  </div>
-
-                  <DropSlot
-                    type="suffix"
-                    morpheme={built.suffix}
-                    onRemove={() => { setBuilt((p) => ({ ...p, suffix: undefined })); setLastResult(null); setRevealed(false); setMode(parts.length > 2 ? 'judge' : 'idle'); }}
-                    label="Suffix"
-                    emptyLabel="suffix"
+                    pageSize={6}
                   />
                 </div>
-
-                {/* Prefixes */}
-                {relevantPrefixes.length > 0 && (
-                  <div className="border-t border-gray-100 pt-3">
-                    <MorphemeCarousel
-                      morphemes={relevantPrefixes}
-                      selected={built.prefix}
-                      onToggle={toggleMorpheme}
-                      label="Prefixes"
-                      type="prefix"
-                      pageSize={6}
-                    />
-                  </div>
-                )}
-
-                {/* Suffixes */}
-                {relevantSuffixes.length > 0 && (
-                  <div className="border-t border-gray-100 pt-3">
-                    <MorphemeCarousel
-                      morphemes={relevantSuffixes}
-                      selected={built.suffix}
-                      onToggle={toggleMorpheme}
-                      label="Suffixes"
-                      type="suffix"
-                      pageSize={6}
-                    />
-                  </div>
-                )}
-
-                {/* Clear */}
-                {hasWord && (built.prefix || built.suffix) && mode !== 'sentence' && (
-                  <div className="text-center pt-1">
-                    <button
-                      onClick={clearBuilt}
-                      className="text-xs text-gray-300 hover:text-gray-500 transition"
-                    >
-                      <XCircle className="w-3 h-3 inline mr-1" />clear
-                    </button>
-                  </div>
-                )}
-              </div>
+              )}
 
               {/* Words you've built */}
               {wordsMade.length > 0 && (
@@ -1042,8 +983,51 @@ export const StudentPlayground: React.FC<{
               )}
             </div>
 
-            {/* ══ RIGHT: Word display + action panel ══════════════════════ */}
+            {/* ══ CENTER: Slots + word display + action panels ══════════════ */}
             <div className="flex-1 space-y-4">
+
+              {/* Slot row */}
+              <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-4 space-y-2">
+                <div className="grid grid-cols-3 gap-2">
+                  <DropSlot
+                    type="prefix"
+                    morpheme={built.prefix}
+                    onRemove={() => { setBuilt((p) => ({ ...p, prefix: undefined })); setLastResult(null); setRevealed(false); setMode(parts.length > 2 ? 'judge' : 'idle'); }}
+                    label="Prefix"
+                    emptyLabel="prefix"
+                  />
+
+                  {/* Base — locked */}
+                  <div className="flex flex-col items-center justify-center rounded-2xl border-2
+                    bg-emerald-500 border-emerald-600 text-white min-h-[76px] px-1 py-2 shadow-md">
+                    <div className="text-xs font-bold uppercase tracking-widest opacity-70 mb-0.5">Base ★</div>
+                    <div className="text-xl font-black">{currentBase.text}</div>
+                    <div className="text-xs font-semibold opacity-75 text-center leading-tight mt-0.5">
+                      {currentBase.meaning}
+                    </div>
+                  </div>
+
+                  <DropSlot
+                    type="suffix"
+                    morpheme={built.suffix}
+                    onRemove={() => { setBuilt((p) => ({ ...p, suffix: undefined })); setLastResult(null); setRevealed(false); setMode(parts.length > 2 ? 'judge' : 'idle'); }}
+                    label="Suffix"
+                    emptyLabel="suffix"
+                  />
+                </div>
+
+                {/* Clear */}
+                {hasWord && (built.prefix || built.suffix) && mode !== 'sentence' && (
+                  <div className="text-center pt-1">
+                    <button
+                      onClick={clearBuilt}
+                      className="text-xs text-gray-300 hover:text-gray-500 transition"
+                    >
+                      <XCircle className="w-3 h-3 inline mr-1" />clear
+                    </button>
+                  </div>
+                )}
+              </div>
 
               {/* Word display card */}
               <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm px-5 py-6">
@@ -1191,6 +1175,23 @@ export const StudentPlayground: React.FC<{
               )}
 
             </div>
+
+            {/* ══ RIGHT: Suffix panel (sticky) ══════════════════════════════ */}
+            <div className="md:sticky md:top-20 md:w-52 lg:w-60 shrink-0">
+              {relevantSuffixes.length > 0 && (
+                <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-4">
+                  <MorphemeCarousel
+                    morphemes={relevantSuffixes}
+                    selected={built.suffix}
+                    onToggle={toggleMorpheme}
+                    label="Suffixes"
+                    type="suffix"
+                    pageSize={6}
+                  />
+                </div>
+              )}
+            </div>
+
           </div>
         </div>
       </div>
