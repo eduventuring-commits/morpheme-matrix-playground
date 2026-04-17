@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useStore } from '../../context/store';
 import { Button } from '../shared/UI';
 
@@ -7,8 +7,58 @@ interface LandingPageProps {
   onTeacherMode: () => void;
 }
 
+const TermsModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[80vh] flex flex-col">
+      <div className="flex items-center justify-between p-5 border-b border-gray-100">
+        <h2 className="text-xl font-extrabold text-gray-800">Terms of Use</h2>
+        <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+      </div>
+      <div className="overflow-y-auto p-5 text-sm text-gray-600 space-y-4">
+        <p className="text-xs text-gray-400 uppercase tracking-wider font-bold">Last updated: April 2026</p>
+
+        <p>Morpheme Matrix Playground is an educational tool created by <strong>Melinda Karshner / EduVentures</strong>. By using this application, you agree to the following terms.</p>
+
+        <div>
+          <h3 className="font-bold text-gray-700 mb-1">1. Educational Use Only</h3>
+          <p>This app is intended for educational purposes — classroom use, tutoring, and individual learning. Commercial redistribution is not permitted without written consent.</p>
+        </div>
+
+        <div>
+          <h3 className="font-bold text-gray-700 mb-1">2. Intellectual Property</h3>
+          <p>All content, word matrices, instructional design, and software are © {new Date().getFullYear()} Melinda Karshner / EduVentures. All rights reserved. You may not copy, reproduce, or distribute any part of this application without prior written permission.</p>
+        </div>
+
+        <div>
+          <h3 className="font-bold text-gray-700 mb-1">3. No Warranty</h3>
+          <p>This application is provided "as is" without warranty of any kind. EduVentures is not liable for any errors, interruptions, or outcomes resulting from use of this tool.</p>
+        </div>
+
+        <div>
+          <h3 className="font-bold text-gray-700 mb-1">4. Privacy</h3>
+          <p>Student data entered in this app is stored locally in your browser and is not transmitted to any server. No personal information is collected.</p>
+        </div>
+
+        <div>
+          <h3 className="font-bold text-gray-700 mb-1">5. Contact</h3>
+          <p>For permissions or inquiries, contact Melinda Karshner at EduVentures.</p>
+        </div>
+      </div>
+      <div className="p-4 border-t border-gray-100 text-center">
+        <button
+          onClick={onClose}
+          className="bg-primary-600 text-white px-6 py-2 rounded-full font-bold hover:bg-primary-700 transition-colors"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
 export const LandingPage: React.FC<LandingPageProps> = ({ onStudentMode, onTeacherMode }) => {
   const { students, progress } = useStore();
+  const [showTerms, setShowTerms] = useState(false);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-100 via-white to-emerald-100 flex flex-col">
@@ -97,6 +147,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStudentMode, onTeach
           ))}
         </div>
       </div>
+
+      {/* Footer */}
+      <div className="bg-white/60 border-t border-gray-100 px-4 py-3 text-center text-xs text-gray-400">
+        &copy; {new Date().getFullYear()} Melinda Karshner / EduVentures. All rights reserved.
+        &nbsp;&middot;&nbsp;
+        <button
+          onClick={() => setShowTerms(true)}
+          className="underline hover:text-gray-600 transition-colors"
+        >
+          Terms of Use
+        </button>
+      </div>
+
+      {showTerms && <TermsModal onClose={() => setShowTerms(false)} />}
     </div>
   );
 };
