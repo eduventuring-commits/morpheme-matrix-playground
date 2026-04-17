@@ -15,33 +15,53 @@ const TermsModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
         <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
       </div>
       <div className="overflow-y-auto p-5 text-sm text-gray-600 space-y-4">
-        <p className="text-xs text-gray-400 uppercase tracking-wider font-bold">Last updated: April 2026</p>
+        <p className="text-xs text-gray-400 uppercase tracking-wider font-bold">Last updated: February 2026</p>
 
         <p>Morpheme Matrix Playground is an educational tool created by <strong>Melinda Karshner / EduVentures</strong>. By using this application, you agree to the following terms.</p>
 
         <div>
-          <h3 className="font-bold text-gray-700 mb-1">1. Educational Use Only</h3>
-          <p>This app is intended for educational purposes — classroom use, tutoring, and individual learning. Commercial redistribution is not permitted without written consent.</p>
+          <h3 className="font-bold text-gray-700 mb-1">1. Educational Use</h3>
+          <p>This app is intended for classroom use, tutoring, and individual learning. Commercial use, resale, or redistribution of this tool or its contents is not permitted without prior written consent.</p>
         </div>
 
         <div>
           <h3 className="font-bold text-gray-700 mb-1">2. Intellectual Property</h3>
-          <p>All content, word matrices, instructional design, and software are © {new Date().getFullYear()} Melinda Karshner / EduVentures. All rights reserved. You may not copy, reproduce, or distribute any part of this application without prior written permission.</p>
+          <p>All content, including word matrices, instructional materials, design, and software, is the property of Melinda Karshner / EduVentures and is protected by copyright. You may not copy, reproduce, modify, distribute, or create derivative works without permission.</p>
         </div>
 
         <div>
-          <h3 className="font-bold text-gray-700 mb-1">3. No Warranty</h3>
-          <p>This application is provided "as is" without warranty of any kind. EduVentures is not liable for any errors, interruptions, or outcomes resulting from use of this tool.</p>
+          <h3 className="font-bold text-gray-700 mb-1">3. Acceptable Use</h3>
+          <p>You agree not to misuse this application, including attempting to copy, reverse engineer, disrupt, or interfere with the functionality of the tool.</p>
         </div>
 
         <div>
-          <h3 className="font-bold text-gray-700 mb-1">4. Privacy</h3>
-          <p>Student data entered in this app is stored locally in your browser and is not transmitted to any server. No personal information is collected.</p>
+          <h3 className="font-bold text-gray-700 mb-1">4. No Warranty</h3>
+          <p>This application is provided "as is" without warranties of any kind. EduVentures makes no guarantees regarding accuracy, reliability, or availability.</p>
         </div>
 
         <div>
-          <h3 className="font-bold text-gray-700 mb-1">5. Contact</h3>
-          <p>For permissions or inquiries, contact Melinda Karshner at EduVentures.</p>
+          <h3 className="font-bold text-gray-700 mb-1">5. Limitation of Liability</h3>
+          <p>EduVentures is not responsible for any decisions, outcomes, or impacts resulting from the use of this tool, including instructional, academic, or student-related outcomes. Use of this tool does not establish any professional, legal, or educational advisory relationship.</p>
+        </div>
+
+        <div>
+          <h3 className="font-bold text-gray-700 mb-1">6. Privacy</h3>
+          <p>This app does not collect or store personal data. Any information entered is stored locally in your browser and is not transmitted to external servers. Users are responsible for ensuring they do not enter sensitive student information.</p>
+        </div>
+
+        <div>
+          <h3 className="font-bold text-gray-700 mb-1">7. Changes to Terms</h3>
+          <p>These terms may be updated at any time. Continued use of the application constitutes acceptance of any changes.</p>
+        </div>
+
+        <div>
+          <h3 className="font-bold text-gray-700 mb-1">8. Governing Law</h3>
+          <p>These terms are governed by the laws of the State of Colorado.</p>
+        </div>
+
+        <div>
+          <h3 className="font-bold text-gray-700 mb-1">9. Contact</h3>
+          <p>For permissions or questions, contact Melinda Karshner / EduVentures.</p>
         </div>
       </div>
       <div className="p-4 border-t border-gray-100 text-center">
