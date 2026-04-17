@@ -7,26 +7,44 @@ interface SpeakOptions {
   voice?: SpeechSynthesisVoice;
 }
 
+// Ranked list of preferred voices — best quality first
+const PREFERRED_VOICES = [
+  'Google US English',
+  'Google UK English Female',
+  'Samantha',
+  'Karen',
+  'Moira',
+  'Alex',
+  'Daniel',
+  'Microsoft Zira',
+  'Microsoft David',
+];
+
+function getPreferredVoice(): SpeechSynthesisVoice | null {
+  const voices = window.speechSynthesis.getVoices();
+  const enVoices = voices.filter((v) => v.lang.startsWith('en'));
+  for (const name of PREFERRED_VOICES) {
+    const match = enVoices.find((v) => v.name.includes(name));
+    if (match) return match;
+  }
+  return enVoices[0] || null;
+}
+
 export function useSpeech() {
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   const speak = useCallback((text: string, options: SpeakOptions = {}) => {
     if (!window.speechSynthesis) return;
 
-    // Cancel any current speech
     window.speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate   = options.rate   ?? 0.85;
-    utterance.pitch  = options.pitch  ?? 1.1;
+    utterance.pitch  = options.pitch  ?? 1.0;
     utterance.volume = options.volume ?? 1;
 
-    // Try to pick a clear English voice
-    const voices = window.speechSynthesis.getVoices();
-    const preferred = voices.find(
-      (v) => v.lang.startsWith('en') && (v.name.includes('Samantha') || v.name.includes('Alex') || v.name.includes('Karen'))
-    ) ?? voices.find((v) => v.lang.startsWith('en'));
-    if (preferred) utterance.voice = preferred;
+    const voice = options.voice ?? getPreferredVoice();
+    if (voice) utterance.voice = voice;
 
     utteranceRef.current = utterance;
     window.speechSynthesis.speak(utterance);
