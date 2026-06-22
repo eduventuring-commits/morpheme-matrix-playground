@@ -23,6 +23,9 @@ import { useDictionary } from '../../hooks/useDictionary';
 import { useStore } from '../../context/store';
 import type { Morpheme, MorphemeMatrix, BuiltWord, SpellingRule } from '../../types';
 import { wordSurface, normalizedSurface, normalizedResult, matchesWordKey } from '../../types';
+import { RULES, getMatrixRuleId, diffWord, engineRuleToRuleId } from '../../data/rules';
+
+type RuleMode = 'always-on' | 'notes-only' | 'off';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -393,6 +396,72 @@ const SpellingTip: React.FC<{ rule: SpellingRule; base: string; suffix: string; 
   );
 };
 
+// ─── Matrix-owned Rule Popup ──────────────────────────────────────────────────
+// Shows the single rule that the current matrix is teaching, plus a diff
+// highlight of the changed letters between the naive concatenation and the
+// real (verified) spelling.
+
+const DiffWord: React.FC<{ naive: string; actual: string }> = ({ naive, actual }) => {
+  const segments = diffWord(naive, actual);
+  return (
+    <span className="font-black tracking-wide">
+      {segments.map((seg, i) =>
+        seg.changed ? (
+          <span key={i} className="text-rose-600 underline decoration-2 underline-offset-2">
+            {seg.text}
+          </span>
+        ) : (
+          <span key={i} className="text-emerald-700">
+            {seg.text}
+          </span>
+        )
+      )}
+    </span>
+  );
+};
+
+const RulePopup: React.FC<{
+  ruleId: import('../../data/rules').RuleId;
+  naive: string;
+  actual: string;
+  changed: boolean;
+}> = ({ ruleId, naive, actual, changed }) => {
+  const rule = RULES[ruleId];
+  return (
+    <div className="mt-3 w-full bg-indigo-50 border-2 border-indigo-300 rounded-2xl px-4 py-3 text-left">
+      <div className="flex items-start gap-2">
+        <span className="text-xl shrink-0">{rule.placeholder ? '🚧' : '🔎'}</span>
+        <div className="flex-1">
+          <p className="font-extrabold text-indigo-800 text-sm">{rule.name}</p>
+          <p className="text-indigo-700 text-sm leading-snug mt-0.5">{rule.text}</p>
+
+          {changed && (
+            <p className="text-sm mt-2">
+              <span className="text-gray-400 line-through mr-1">{naive}</span>
+              <span className="text-gray-400 mx-1">→</span>
+              <DiffWord naive={naive} actual={actual} />
+            </p>
+          )}
+
+          {rule.examples.length > 0 && (
+            <ul className="mt-2 space-y-0.5">
+              {rule.examples.map((ex) => (
+                <li key={ex} className="text-indigo-600 text-xs font-semibold">
+                  • {ex}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {rule.note && (
+            <p className="text-indigo-500 text-xs italic mt-2">{rule.note}</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ─── Word Display (right panel top) ──────────────────────────────────────────
 
 const WordDisplay: React.FC<{
@@ -402,7 +471,13 @@ const WordDisplay: React.FC<{
   revealed: boolean;
   isInWordKey: boolean;
   dictIsReal: boolean | null;
-}> = ({ built, surface, spellingRule, revealed, isInWordKey, dictIsReal }) => {
+  matrixId: string;
+  ruleMode: RuleMode;
+}> = ({ built, surface, spellingRule, revealed, isInWordKey, dictIsReal, matrixId, ruleMode }) => {
+  const [showChip, setShowChip] = useState(false);
+  // Reset the tappable chip's open state whenever the built word changes.
+  useEffect(() => { setShowChip(false); }, [surface]);
+
   const parts = [built.prefix, built.base, built.suffix].filter(Boolean) as Morpheme[];
 
   if (parts.length === 0 || !built.base) {
@@ -420,6 +495,28 @@ const WordDisplay: React.FC<{
   const wordColor = revealed
     ? isReal ? 'text-emerald-600' : 'text-purple-500'
     : 'text-gray-800';
+
+  // ── New matrix-owned rule popup logic ──
+  // The engine already handles option-A per-combination tips via SpellingTip.
+  // We ADD the matrix capstone rule popup only when:
+  //  - the word is a real (verified) wordKey word,
+  //  - the engine did NOT already detect a rule (spellingRule == null), and
+  //  - the naive concatenation differs from the actual spelling (a change to show)
+  //    OR ruleMode is 'always-on' (where we also show a quiet "nothing changes" note).
+  const naive = wordSurface(built);
+  const actual = surface;
+  const changed = naive.toLowerCase() !== actual.toLowerCase();
+  const engineHandled = spellingRule != null;
+  const ruleId = getMatrixRuleId(matrixId);
+  // Don't double up if the engine's rule maps to the same display rule.
+  const engineDisplayRule = engineRuleToRuleId(spellingRule);
+  const showNewRule =
+    ruleMode !== 'off' &&
+    isInWordKey &&
+    !!built.suffix &&
+    !engineHandled &&
+    engineDisplayRule == null &&
+    (changed || ruleMode === 'always-on');
 
   return (
     <div className="flex flex-col items-center gap-3">
@@ -451,14 +548,40 @@ const WordDisplay: React.FC<{
         </div>
       )}
 
-      {/* Spelling rule tip — shown whenever a rule fires, even before judging */}
-      {spellingRule && built.suffix && (
+      {/* Spelling rule tip — shown whenever the engine detects a per-combination rule */}
+      {ruleMode !== 'off' && spellingRule && built.suffix && (
         <SpellingTip
           rule={spellingRule}
           base={built.base?.text ?? ''}
           suffix={built.suffix.text}
           surface={surface}
         />
+      )}
+
+      {/* Matrix-owned capstone rule popup (additive to the engine tip above) */}
+      {showNewRule && ruleMode === 'always-on' && (
+        changed ? (
+          <RulePopup ruleId={ruleId} naive={naive} actual={actual} changed={changed} />
+        ) : (
+          <p className="mt-2 text-xs text-gray-400 italic">
+            This one just attaches — nothing changes.
+          </p>
+        )
+      )}
+
+      {showNewRule && ruleMode === 'notes-only' && (
+        <div className="mt-3 w-full flex flex-col items-center">
+          <button
+            onClick={() => setShowChip((v) => !v)}
+            className="text-xs font-extrabold px-3 py-1.5 rounded-full border-2
+              border-indigo-200 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition"
+          >
+            ✨ Spell check
+          </button>
+          {showChip && (
+            <RulePopup ruleId={ruleId} naive={naive} actual={actual} changed={changed} />
+          )}
+        </div>
       )}
 
       {/* Reveal badge */}
@@ -700,6 +823,8 @@ export const StudentPlayground: React.FC<{
   const [meaningOptions, setMeaningOptions] = useState<{ correct: string; distractor: string } | null>(null);
   const [activeDrag, setActiveDrag] = useState<Morpheme | null>(null);
   const [wordsMade, setWordsMade]   = useState<{ word: string; sentence?: string }[]>([]);
+  // Teacher rule-display toggle — component state only (NOT persisted to store).
+  const [ruleMode, setRuleMode]     = useState<RuleMode>('notes-only');
 
   const startTimeRef = useRef<number>(Date.now());
   useEffect(() => { startTimeRef.current = Date.now(); }, [built]);
@@ -893,13 +1018,40 @@ export const StudentPlayground: React.FC<{
               <span className="text-2xl shrink-0">{matrix.icon ?? '📚'}</span>
               <span className="font-extrabold text-gray-800 truncate">{matrix.name}</span>
             </div>
-            {score.tried > 0 && (
-              <div className="shrink-0 text-right text-sm">
-                <span className="font-extrabold text-emerald-600">{score.correct}</span>
-                <span className="text-gray-400">/{score.tried}</span>
-                <span className="text-xs text-gray-400 ml-1">correct</span>
+            <div className="flex items-center gap-3 shrink-0">
+              {/* Teacher rule-display toggle */}
+              <div className="flex items-center gap-1.5">
+                <span className="hidden sm:inline text-xs font-bold text-gray-400 uppercase tracking-wide">
+                  Rules
+                </span>
+                <div className="flex rounded-xl border border-gray-200 overflow-hidden text-xs font-bold">
+                  {([
+                    ['always-on', 'Always'],
+                    ['notes-only', 'Tap'],
+                    ['off', 'Off'],
+                  ] as [RuleMode, string][]).map(([val, label]) => (
+                    <button
+                      key={val}
+                      onClick={() => setRuleMode(val)}
+                      className={`px-2.5 py-1 transition ${
+                        ruleMode === val
+                          ? 'bg-indigo-500 text-white'
+                          : 'bg-white text-gray-400 hover:text-gray-600'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
               </div>
-            )}
+              {score.tried > 0 && (
+                <div className="text-right text-sm">
+                  <span className="font-extrabold text-emerald-600">{score.correct}</span>
+                  <span className="text-gray-400">/{score.tried}</span>
+                  <span className="text-xs text-gray-400 ml-1">correct</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -1038,6 +1190,8 @@ export const StudentPlayground: React.FC<{
                   revealed={revealed}
                   isInWordKey={isInWordKey}
                   dictIsReal={dict.isRealWord}
+                  matrixId={matrix.id}
+                  ruleMode={ruleMode}
                 />
 
                 {/* Speak button */}
