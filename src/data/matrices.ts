@@ -384,6 +384,8 @@ export const SYSTEM_MATRICES: MorphemeMatrix[] = [
       { id: 'p-rupt-dis',   text: 'dis',   type: 'prefix', meaning: 'apart / away',   origin: 'Latin' },
       { id: 'p-rupt-inter', text: 'inter', type: 'prefix', meaning: 'between',         origin: 'Latin' },
       { id: 'p-rupt-e',     text: 'e',     type: 'prefix', meaning: 'out',             origin: 'Latin' },
+      { id: 'p-rupt-ab',    text: 'ab',    type: 'prefix', meaning: 'off / away',      origin: 'Latin' },
+      { id: 'p-rupt-cor',   text: 'cor',   type: 'prefix', meaning: 'together / thoroughly', origin: 'Latin' },
     ],
     bases: [
       { id: 'b-rupt', text: 'rupt', type: 'base', meaning: 'break / burst', origin: 'Latin', examples: ['erupt', 'disrupt', 'interrupt', 'corrupt'] },
@@ -396,6 +398,7 @@ export const SYSTEM_MATRICES: MorphemeMatrix[] = [
       { id: 's-rupt-tion', text: 'tion', type: 'suffix', meaning: 'act of / state of' },
       { id: 's-rupt-ible', text: 'ible', type: 'suffix', meaning: 'can be done' },
       { id: 's-rupt-ive',  text: 'ive',  type: 'suffix', meaning: 'tending to' },
+      { id: 's-rupt-ure',  text: 'ure',  type: 'suffix', meaning: 'act / result of' },
     ],
     wordKey: [
       // erupt (e + rupt)
@@ -424,6 +427,21 @@ export const SYSTEM_MATRICES: MorphemeMatrix[] = [
       { word: 'interruption', definition: 'the act of breaking in; a pause forced by outside action', partOfSpeech: 'noun', example: 'There was a brief interruption in the broadcast.' },
       { word: 'interruptible', definition: 'able to be interrupted', partOfSpeech: 'adj', example: 'The task is interruptible at any point.' },
       { word: 'interruptive', definition: 'tending to interrupt', partOfSpeech: 'adj', example: 'His interruptive style annoyed the group.' },
+      // rupture (rupt + ure)
+      { word: 'rupture',      definition: 'a break or burst', partOfSpeech: 'noun', example: 'The flood caused a rupture in the dam wall.' },
+      { word: 'ruptured',     definition: 'broke or burst open', partOfSpeech: 'verb', example: 'The old pipe ruptured under the pressure.' },
+      { word: 'rupturing',    definition: 'breaking or bursting open', partOfSpeech: 'verb', example: 'Doctors worked to stop the artery from rupturing.' },
+      { word: 'ruptures',     definition: 'breaks or bursts open', partOfSpeech: 'verb', example: 'Too much pressure ruptures the seal.' },
+      // abrupt (ab + rupt)
+      { word: 'abrupt',       definition: 'sudden and unexpected, like a sharp break', partOfSpeech: 'adj', example: 'The car came to an abrupt stop.' },
+      { word: 'abruptly',     definition: 'in a sudden, sharp way', partOfSpeech: 'adv', example: 'She left the room abruptly.' },
+      { word: 'abruptness',   definition: 'the quality of being sudden', partOfSpeech: 'noun', example: 'The abruptness of the news surprised everyone.' },
+      // corrupt (cor + rupt)
+      { word: 'corrupt',      definition: 'dishonest; morally broken', partOfSpeech: 'adj', example: 'The corrupt official took bribes.' },
+      { word: 'corrupts',     definition: 'makes dishonest or broken', partOfSpeech: 'verb', example: 'Greed corrupts some leaders.' },
+      { word: 'corrupted',    definition: 'made dishonest or broken', partOfSpeech: 'verb', example: 'The file was corrupted and would not open.' },
+      { word: 'corrupting',   definition: 'making dishonest or broken', partOfSpeech: 'verb', example: 'A corrupting influence spread through the group.' },
+      { word: 'corruption',   definition: 'dishonest behavior, especially by people in power', partOfSpeech: 'noun', example: 'The reporter exposed corruption in the city.' },
     ],
   },
 
