@@ -721,9 +721,11 @@ export const SYSTEM_MATRICES: MorphemeMatrix[] = [
     createdBy: 'system',
     createdAt: '2024-01-01',
     prefixes: [
-      { id: 'p-dict-in',    text: 'in',    type: 'prefix', meaning: 'in / against', origin: 'Latin' },
-      { id: 'p-dict-pre',   text: 'pre',   type: 'prefix', meaning: 'before',       origin: 'Latin' },
-      { id: 'p-dict-inter', text: 'inter', type: 'prefix', meaning: 'between',      origin: 'Latin' },
+      { id: 'p-dict-in',     text: 'in',     type: 'prefix', meaning: 'in / against',  origin: 'Latin' },
+      { id: 'p-dict-pre',    text: 'pre',    type: 'prefix', meaning: 'before',        origin: 'Latin' },
+      { id: 'p-dict-inter',  text: 'inter',  type: 'prefix', meaning: 'between',       origin: 'Latin' },
+      { id: 'p-dict-contra', text: 'contra', type: 'prefix', meaning: 'against',       origin: 'Latin' },
+      { id: 'p-dict-ver',    text: 'ver',    type: 'prefix', meaning: 'true / truth',  origin: 'Latin' },
     ],
     bases: [
       { id: 'b-dict', text: 'dict', type: 'base', meaning: 'say / tell / word', origin: 'Latin', examples: ['predict', 'dictate', 'verdict', 'dictionary'] },
@@ -735,11 +737,39 @@ export const SYSTEM_MATRICES: MorphemeMatrix[] = [
       { id: 's-dict-ion',   text: 'ion',   type: 'suffix', meaning: 'act of' },
       { id: 's-dict-able',  text: 'able',  type: 'suffix', meaning: 'can be done' },
       { id: 's-dict-ive',   text: 'ive',   type: 'suffix', meaning: 'tending to' },
+      { id: 's-dict-ate',   text: 'ate',   type: 'suffix', meaning: 'make / do' },
+      { id: 's-dict-or',    text: 'or',    type: 'suffix', meaning: 'one who / that which' },
+      { id: 's-dict-ary',   text: 'ary',   type: 'suffix', meaning: 'place / thing for' },
     ],
     wordKey: [
-      { word: 'predict',     definition: 'to say before it happens', partOfSpeech: 'verb', example: 'Scientists predict the weather.' },
-      { word: 'prediction',  definition: 'a statement about the future', partOfSpeech: 'noun', example: 'Her prediction came true.' },
-      { word: 'predictable', definition: 'can be predicted', partOfSpeech: 'adj', example: 'The ending was predictable.' },
+      // predict family (pre + dict)
+      { word: 'predict',      definition: 'to say before it happens', partOfSpeech: 'verb', example: 'Scientists predict tomorrow\'s weather using maps.' },
+      { word: 'predicts',     definition: 'says before it happens', partOfSpeech: 'verb', example: 'The almanac predicts a cold and snowy winter.' },
+      { word: 'predicted',    definition: 'said before it happened', partOfSpeech: 'verb', example: 'She predicted that our team would win the game.' },
+      { word: 'predicting',   definition: 'saying before it happens', partOfSpeech: 'verb', example: 'Predicting earthquakes is still very hard.' },
+      { word: 'prediction',   definition: 'a statement about what will happen in the future', partOfSpeech: 'noun', example: 'Her prediction about the eclipse came true.' },
+      { word: 'predictable',  definition: 'able to be said ahead of time; easy to guess', partOfSpeech: 'adj', example: 'The ending of the movie was predictable.' },
+      { word: 'predictive',   definition: 'tending to say what will happen', partOfSpeech: 'adj', example: 'The phone\'s predictive text guessed the word.' },
+      // contradict family (contra + dict)
+      { word: 'contradict',   definition: 'to say the opposite; to speak against', partOfSpeech: 'verb', example: 'Do not contradict the coach in front of the team.' },
+      { word: 'contradicts',  definition: 'says the opposite of something', partOfSpeech: 'verb', example: 'His second story contradicts the first one.' },
+      { word: 'contradicted', definition: 'said the opposite of', partOfSpeech: 'verb', example: 'The new evidence contradicted the witness.' },
+      { word: 'contradicting',definition: 'saying the opposite of', partOfSpeech: 'verb', example: 'She kept contradicting herself, so no one believed her.' },
+      { word: 'contradiction',definition: 'a statement that says the opposite of another', partOfSpeech: 'noun', example: 'Saying you are tired but not sleepy is a contradiction.' },
+      // dictate family (dict + ate)
+      { word: 'dictate',      definition: 'to say words aloud for someone to write down; to command', partOfSpeech: 'verb', example: 'The teacher will dictate the spelling words slowly.' },
+      { word: 'dictates',     definition: 'says words aloud to be written; gives orders', partOfSpeech: 'verb', example: 'The boss dictates a letter while the assistant types.' },
+      { word: 'dictated',     definition: 'said aloud to be written down; commanded', partOfSpeech: 'verb', example: 'The author dictated the whole chapter into a recorder.' },
+      { word: 'dictating',    definition: 'saying words aloud to be written; commanding', partOfSpeech: 'verb', example: 'She is dictating her notes while driving to work.' },
+      { word: 'dictation',    definition: 'the act of saying words aloud for someone to write', partOfSpeech: 'noun', example: 'We practiced spelling through a short dictation.' },
+      { word: 'dictator',     definition: 'a ruler who tells everyone what to do', partOfSpeech: 'noun', example: 'The cruel dictator refused to let anyone disagree.' },
+      // diction / dictionary (dict + ion ...)
+      { word: 'diction',      definition: 'the way a person says or pronounces words', partOfSpeech: 'noun', example: 'The actor\'s clear diction made every line easy to hear.' },
+      { word: 'dictionary',   definition: 'a book that tells what words mean', partOfSpeech: 'noun', example: 'Look up the tricky word in the dictionary.' },
+      { word: 'dictionaries', definition: 'more than one dictionary', partOfSpeech: 'noun', example: 'The shelf was lined with thick, heavy dictionaries.' },
+      // verdict family (ver + dict)
+      { word: 'verdict',      definition: 'the true statement a jury says at the end of a trial', partOfSpeech: 'noun', example: 'The jury returned a verdict of not guilty.' },
+      { word: 'verdicts',     definition: 'more than one verdict', partOfSpeech: 'noun', example: 'The judge read out the verdicts for both cases.' },
     ],
   },
 
