@@ -800,12 +800,38 @@ export const SYSTEM_MATRICES: MorphemeMatrix[] = [
       { id: 's-fer-ing',  text: 'ing',  type: 'suffix', meaning: 'ongoing action (note: consonant doubles — referring)' },
       { id: 's-fer-able', text: 'able', type: 'suffix', meaning: 'can be done' },
       { id: 's-fer-al',   text: 'al',   type: 'suffix', meaning: 'relating to' },
+      { id: 's-fer-ence', text: 'ence', type: 'suffix', meaning: 'act / quality of' },
     ],
     wordKey: [
-      { word: 'infer',     definition: 'to carry meaning from evidence; to conclude', partOfSpeech: 'verb', example: 'I can infer she was upset by her tone.' },
-      { word: 'refer',     definition: 'to carry back; to direct to a source', partOfSpeech: 'verb', example: 'I refer you to page 12.' },
-      { word: 'transfer',  definition: 'to carry across from one place to another', partOfSpeech: 'verb', example: 'Transfer the files to the new computer.' },
-      { word: 'prefer',    definition: 'to carry before; to like better', partOfSpeech: 'verb', example: 'I prefer tea over coffee.' },
+      // defer family (de + fer)
+      { word: 'defer',        definition: 'to put off until later; to delay', partOfSpeech: 'verb', example: 'We will defer the field trip until the weather improves.' },
+      { word: 'deferred',     definition: 'put off until later (past tense)', partOfSpeech: 'verb', example: 'The game was deferred until the field had dried out.' },
+      { word: 'deferring',    definition: 'putting off until later right now', partOfSpeech: 'verb', example: 'They are deferring the decision until everyone can vote.' },
+      { word: 'defers',       definition: 'puts off until later', partOfSpeech: 'verb', example: 'He always defers his hardest homework to the last minute.' },
+      // infer family (in + fer)
+      { word: 'infer',        definition: 'to carry meaning out of clues; to figure out from evidence', partOfSpeech: 'verb', example: 'From the dark clouds, we can infer that rain is coming.' },
+      { word: 'inferred',     definition: 'figured something out from evidence (past tense)', partOfSpeech: 'verb', example: 'From the muddy boots, she inferred that he had been outside.' },
+      { word: 'inferring',    definition: 'figuring something out from evidence right now', partOfSpeech: 'verb', example: 'The detective was inferring the truth from tiny clues.' },
+      { word: 'infers',       definition: 'figures something out from evidence', partOfSpeech: 'verb', example: 'A good reader infers how a character feels from their actions.' },
+      // prefer family (pre + fer)
+      { word: 'prefer',       definition: 'to like one thing better than another', partOfSpeech: 'verb', example: 'I prefer reading outside when the weather is sunny.' },
+      { word: 'preferable',   definition: 'more desirable; better to choose', partOfSpeech: 'adjective', example: 'Walking is preferable to driving on such a short trip.' },
+      { word: 'preferred',    definition: 'liked one thing better (past tense); favored', partOfSpeech: 'verb', example: 'The chocolate cake was the preferred choice at the party.' },
+      { word: 'preferring',   definition: 'liking one thing better right now', partOfSpeech: 'verb', example: 'She chose the window seat, preferring the view of the hills.' },
+      { word: 'prefers',      definition: 'likes one thing better than another', partOfSpeech: 'verb', example: 'My brother prefers soccer to baseball.' },
+      // refer family (re + fer)
+      { word: 'refer',        definition: 'to carry back; to direct someone to a source', partOfSpeech: 'verb', example: 'If you forget a word, you can refer to the glossary at the back.' },
+      { word: 'reference',    definition: 'a source you carry back to for information', partOfSpeech: 'noun', example: 'A dictionary is a handy reference when you are reading.' },
+      { word: 'referral',     definition: 'the act of directing someone to a source or service', partOfSpeech: 'noun', example: 'You need a referral from your doctor to see the eye specialist.' },
+      { word: 'referred',     definition: 'directed someone to a source (past tense)', partOfSpeech: 'verb', example: 'The doctor referred her to a specialist downtown.' },
+      { word: 'referring',    definition: 'directing someone to a source right now', partOfSpeech: 'verb', example: 'He kept referring to his notes during the whole speech.' },
+      { word: 'refers',       definition: 'directs someone to a source', partOfSpeech: 'verb', example: 'The teacher refers us to page twelve for the answer.' },
+      // transfer family (trans + fer)
+      { word: 'transfer',     definition: 'to carry something across from one place to another', partOfSpeech: 'verb', example: 'Please transfer the photos from your phone to the computer.' },
+      { word: 'transferable', definition: 'able to be carried across to someone or something else', partOfSpeech: 'adjective', example: 'The bus ticket is transferable, so you can give it to a friend.' },
+      { word: 'transferred',  definition: 'carried something across (past tense)', partOfSpeech: 'verb', example: 'She transferred to a new school in the middle of the year.' },
+      { word: 'transferring', definition: 'carrying something across right now', partOfSpeech: 'verb', example: 'The nurse is transferring the patient to a quieter room.' },
+      { word: 'transfers',    definition: 'carries something across to another place', partOfSpeech: 'verb', example: 'The bank transfers money between accounts in seconds.' },
     ],
   },
 
